@@ -1,6 +1,6 @@
 ---
 
-version: v0.2.0
+version: v0.2.1
 
 ---
 
@@ -21,7 +21,12 @@ version: v0.2.0
 
 execute `xsploit version`, output:
 
-`xsploit <license: [public|pro|...]> version v0.0.1[+dev], build <GitCommit> at <DateTime>`
+`xsploit <license: [public|pro|...]> version v0.0.1[+dev], build <gitcommit> at <datetime>`
+
+* `license` can be public, pro, or any other value you want
+* `version` follows [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html)
+* `gitcommit` is the first 7 characters of the latest commit's hash
+* `datetime` follows the RFC3339 format
 
 e.g.
 ```
