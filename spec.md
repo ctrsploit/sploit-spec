@@ -1,6 +1,6 @@
 ---
 
-version: v0.2.1
+version: v0.3.0
 
 ---
 
@@ -33,3 +33,24 @@ e.g.
 $ ctrsploit version
 ctrsploit public version v0.5.0+dev, build 6165b8e at 2023-05-31T07:36:02Z
 ```
+
+## suggested directory structure
+
+According to https://github.com/golang-standards/project-layout:
+
+* /bin: contains the built binary
+    * /release
+* /cmd
+    * /xsploit: the cli directory
+        * /env: top level command env and it's subcommands' cli.Command definition
+        * /exploit: top level command exploit and it's subcommands' cli.Command definition
+        * /checksec: top level command checksec and it's subcommands' cli.Command definition
+        * /auto: top level command auto and it's subcommands' cli.Command definition
+        * /version: top level command version and it's subcommands' cli.Command definition
+* /env: env implementations
+* /exploit: exploit implementations
+* /checksec: checksec implementations
+* /version: version implementations
+* /test: Additional external test apps and test data.
+* /pkg: Library code that's ok to use by external applications.
+
