@@ -11,9 +11,17 @@ type Short struct {
 	Result      string `json:"result"`
 }
 
+func getFormat(name string) string {
+	if len(name) < 8 {
+		return "\t\t"
+	}
+	return "\t"
+}
+
 func (s Short) Text() string {
-	tpl := `{.name}:	{.result}	{.description}`
+	tpl := `{.name}:{.format}{.result}	{.description}`
 	return awesome_libs.Format(tpl, awesome_libs.Dict{
+		"format":      getFormat(s.Name),
 		"name":        s.Name,
 		"result":      s.Result,
 		"description": getDescription(s.Description),
@@ -22,8 +30,9 @@ func (s Short) Text() string {
 
 func (s Short) Colorful() string {
 	output := colorful.Colorful{}
-	tpl := `{.name}:	{.result}	{.description}`
+	tpl := `{.name}:{.format}{.result}	{.description}`
 	return awesome_libs.Format(tpl, awesome_libs.Dict{
+		"format":      getFormat(s.Name),
 		"name":        output.Name(s.Name),
 		"description": output.Description(getDescription(s.Description)),
 		"result":      output.Result(s.Result),
