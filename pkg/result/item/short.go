@@ -12,7 +12,8 @@ type Short struct {
 }
 
 func getFormat(name string) string {
-	if len(name) < 8 {
+	// name + ':'
+	if len(name) < 7 {
 		return "\t\t"
 	}
 	return "\t"
