@@ -12,20 +12,20 @@ type Short struct {
 }
 
 func (s Short) Text() string {
-	tpl := `{.name}:	{.result} # {.description}`
+	tpl := `{.name}:	{.result}	{.description}`
 	return awesome_libs.Format(tpl, awesome_libs.Dict{
 		"name":        s.Name,
 		"result":      s.Result,
-		"description": s.Description,
+		"description": getDescription(s.Description),
 	})
 }
 
 func (s Short) Colorful() string {
 	output := colorful.Colorful{}
-	tpl := `{.name}:	{.result} {.description}`
+	tpl := `{.name}:	{.result}	{.description}`
 	return awesome_libs.Format(tpl, awesome_libs.Dict{
 		"name":        output.Name(s.Name),
-		"description": output.Description("# " + s.Description),
-		"result":      s.Result,
+		"description": output.Description(getDescription(s.Description)),
+		"result":      output.Result(s.Result),
 	})
 }
