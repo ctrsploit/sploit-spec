@@ -34,6 +34,10 @@ func (o Colorful) Name(text string) (s string) {
 	return color.New(color.FgCyan, color.Bold).Sprint(text)
 }
 
+func (o Colorful) Result(text string) (s string) {
+	return color.HiGreenString(text)
+}
+
 func (o Colorful) Description(text string) (s string) {
 	return color.New(color.FgHiWhite).Sprintf(text)
 }
