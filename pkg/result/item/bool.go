@@ -12,7 +12,7 @@ type Bool struct {
 }
 
 func (i Bool) Text() string {
-	tpl := `[{.result}]  {.name}	# {.description}`
+	tpl := `{.result}  {.name}	# {.description}`
 	return awesome_libs.Format(tpl, awesome_libs.Dict{
 		"result":      colorful.Bool(colorful.Text{}, i.Result),
 		"name":        i.Name,
