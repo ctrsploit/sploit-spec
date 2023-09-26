@@ -16,6 +16,9 @@ func getFormat(name string) string {
 	if len(name) < 7 {
 		return "\t\t\t"
 	}
+	if len(name) < 15 {
+		return "\t\t"
+	}
 	return "\t"
 }
 
