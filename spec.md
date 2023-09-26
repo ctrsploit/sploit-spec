@@ -8,14 +8,14 @@ version: v0.3.0
 
 ## Top level commands
 
-| Commands | Alias | Description |
-| --- | --- | --- |
-| env | e | information collection |
-| exploit | x | run a exploit |
-| checksec | c | detect vulnerabilities |
-| auto | a | auto gathering information, and detect vuls, and exploit |
-| version | - | show sploit tool's version |
-| spec-version | - | show which spec does the sploit tool use |
+| Commands     | Alias | Description                                              |
+|--------------|-------|----------------------------------------------------------|
+| env          | e     | information collection                                   |
+| exploit      | x     | run a exploit                                            |
+| checksec     | c     | detect vulnerabilities                                   |
+| auto         | a     | auto gathering information, and detect vuls, and exploit |
+| version      | -     | show sploit tool's version                               |
+| spec-version | -     | show which spec does the sploit tool use                 |
 
 ## version command
 
@@ -54,3 +54,24 @@ According to https://github.com/golang-standards/project-layout:
 * /test: Additional external test apps and test data.
 * /pkg: Library code that's ok to use by external applications.
 
+## json/text/colorful output mode
+
+x-sploit provide 3 output options:
+
+```
+GLOBAL OPTIONS:
+   --colorful  output colorfully (default: false)
+   --json      output colorfully (default: false)
+```
+
+Usage
+
+```
+x-sploit --colorful subcommands
+```
+
+E.g.
+
+![](./images/colorful.png)
+
+Coding see [github.com/ctrsploit/sploit-spec/pkg/printer/example_test.go](https://github.com/ctrsploit/sploit-spec/blob/main/pkg/printer/example_test.go)
