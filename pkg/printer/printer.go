@@ -16,6 +16,7 @@ const (
 type Printer interface {
 	Text() string
 	Colorful() string
+	IsEmpty() bool
 }
 
 func Text(p Printer) (s string) {

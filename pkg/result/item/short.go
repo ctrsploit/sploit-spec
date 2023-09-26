@@ -19,6 +19,10 @@ func getFormat(name string) string {
 	return "\t"
 }
 
+func (i Short) IsEmpty() bool {
+	return i.Name == "" && i.Description == "" && i.Result == ""
+}
+
 func (s Short) Text() string {
 	tpl := `{.name}:{.format}{.result}	{.description}`
 	return awesome_libs.Format(tpl, awesome_libs.Dict{

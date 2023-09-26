@@ -8,6 +8,10 @@ type SubTitle struct {
 	Name string `json:"name"`
 }
 
+func (t SubTitle) IsEmpty() bool {
+	return t.Name == ""
+}
+
 func (t SubTitle) Text() string {
 	tpl := `[{.title}]`
 	return awesome_libs.Format(tpl, awesome_libs.Dict{
