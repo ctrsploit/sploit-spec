@@ -19,15 +19,17 @@ type Printer interface {
 	IsEmpty() bool
 }
 
-func Text(p Printer) (s string) {
-	return p.Text()
+type PrintFunc func(p interface{}) (s string)
+
+func Text(p interface{}) (s string) {
+	return p.(Printer).Text()
 }
 
-func Colorful(p Printer) (s string) {
-	return p.Colorful()
+func Colorful(p interface{}) (s string) {
+	return p.(Printer).Colorful()
 }
 
-func Json(p Printer) (s string) {
+func Json(p interface{}) (s string) {
 	bytes, err := json.Marshal(p)
 	if err != nil {
 		awesome_error.CheckWarning(err)
@@ -37,7 +39,7 @@ func Json(p Printer) (s string) {
 	return
 }
 
-func GetPrinter(t int) func(p Printer) (s string) {
+func GetPrinter(t int) PrintFunc {
 	switch t {
 	case TypeText:
 		return Text
@@ -47,4 +49,13 @@ func GetPrinter(t int) func(p Printer) (s string) {
 		return Json
 	}
 	return nil
+}
+
+func Print(print PrintFunc, printers ...Printer) (s string) {
+	for _, i := range printers {
+		if !i.IsEmpty() {
+			s += print(i) + "\n"
+		}
+	}
+	return
 }
