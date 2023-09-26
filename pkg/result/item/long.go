@@ -11,6 +11,10 @@ type Long struct {
 	Result      string `json:"result"`
 }
 
+func (i Long) IsEmpty() bool {
+	return i.Name == "" && i.Description == "" && i.Result == ""
+}
+
 func (l Long) Text() string {
 	tpl := `{.name}	{.description}
 {.result}`

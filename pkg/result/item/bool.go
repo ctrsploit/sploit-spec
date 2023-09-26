@@ -11,6 +11,10 @@ type Bool struct {
 	Result      bool   `json:"result"`
 }
 
+func (i Bool) IsEmpty() bool {
+	return i.Name == "" && i.Description == "" && i.Result == false
+}
+
 func (i Bool) Text() string {
 	tpl := `{.result}  {.name}	{.description}`
 	return awesome_libs.Format(tpl, awesome_libs.Dict{

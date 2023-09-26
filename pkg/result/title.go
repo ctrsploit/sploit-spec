@@ -9,6 +9,10 @@ type Title struct {
 	Name string `json:"name"`
 }
 
+func (t Title) IsEmpty() bool {
+	return t.Name == ""
+}
+
 func (t Title) Text() string {
 	tpl := `{.padding}{.title}{.padding}`
 	return awesome_libs.Format(tpl, awesome_libs.Dict{
