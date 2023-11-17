@@ -75,7 +75,7 @@ func InstallGlobalFlagColorfulFlag(app *cli.App) {
 		flag := ctx.Bool("colorful")
 		if flag {
 			colorful.O = colorful.Colorful{}
-			Printer = printer.GetPrinter(printer.TypeColorful)
+			Printer = printer.NewWorker(printer.TypeColorful)
 		}
 		return
 	}
