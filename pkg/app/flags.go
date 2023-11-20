@@ -28,6 +28,11 @@ var (
 		Value: false,
 		Usage: "output colorfully",
 	}
+	jsonFlag = &cli.BoolFlag{
+		Name:  "json",
+		Value: false,
+		Usage: "output in json format",
+	}
 )
 
 func InstallGlobalFlagDebug(app *cli.App, appLogger *logrus.Logger) {
@@ -81,8 +86,27 @@ func InstallGlobalFlagColorfulFlag(app *cli.App) {
 	}
 }
 
+func InstallGlobalFlagJsonFlag(app *cli.App) {
+	app.Flags = append(app.Flags, jsonFlag)
+	before := app.Before
+	app.Before = func(ctx *cli.Context) (err error) {
+		if before != nil {
+			err = before(ctx)
+			if err != nil {
+				return
+			}
+		}
+		flag := ctx.Bool("json")
+		if flag {
+			Printer = printer.NewWorker(printer.TypeJson)
+		}
+		return
+	}
+}
+
 func InstallGlobalFlags(app *cli.App) {
 	InstallGlobalFlagDebug(app, log.Logger)
 	InstallGlobalFlagExperimentalFlag(app)
 	InstallGlobalFlagColorfulFlag(app)
+	InstallGlobalFlagJsonFlag(app)
 }
