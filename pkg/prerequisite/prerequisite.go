@@ -3,7 +3,6 @@ package prerequisite
 import (
 	"fmt"
 	"github.com/ctrsploit/sploit-spec/pkg/app"
-	"github.com/ctrsploit/sploit-spec/pkg/printer"
 	"github.com/ctrsploit/sploit-spec/pkg/result"
 	"github.com/ctrsploit/sploit-spec/pkg/result/item"
 )
@@ -54,15 +53,6 @@ type Result struct {
 	Prerequisite item.Bool
 }
 
-func (r Result) string() (s string) {
-	switch app.Printer.Type {
-	case printer.TypeJson:
-		return app.Printer.PrintFunc(r)
-	}
-	s += app.Printer.Print(r.Name, r.Prerequisite)
-	return
-}
-
 // Output print prerequisite with colorful; must be used after p.Check().
 func (p *BasePrerequisite) Output() {
 	if !p.checked {
@@ -78,6 +68,6 @@ func (p *BasePrerequisite) Output() {
 			Result:      p.Satisfied,
 		},
 	}
-	fmt.Println(r.string())
+	fmt.Println(app.Printer.Print(r))
 	return
 }
