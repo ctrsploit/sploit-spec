@@ -17,8 +17,9 @@ type Result struct {
 	NotPrinter string `json:"-"`
 	Name       result.Title
 	Nested     Nested
-	RuleB      item.Bool `json:"rule_b"`
-	RuleC      item.Long `json:"rule_c"`
+	Array      []item.Short
+	RuleC      item.Bool `json:"rule_c"`
+	RuleD      item.Long `json:"rule_d"`
 }
 
 var r = Result{
@@ -33,20 +34,32 @@ var r = Result{
 			Result:      "value",
 		},
 	},
-	RuleB: item.Bool{
-		Name:        "Rule B",
-		Description: "bbbbb",
-		Result:      false,
+	Array: []item.Short{
+		{
+			Name:        "b1",
+			Description: "b1",
+			Result:      "b1",
+		},
+		{
+			Name:        "b2",
+			Description: "b2",
+			Result:      "b2",
+		},
 	},
-	RuleC: item.Long{
+	RuleC: item.Bool{
 		Name:        "Rule C",
 		Description: "ccccc",
+		Result:      false,
+	},
+	RuleD: item.Long{
+		Name:        "Rule D",
+		Description: "ddddd",
 		Result:      "word",
 	},
 }
 
 func Test_extractPrinter(t *testing.T) {
-	printers := extractPrinter(reflect.ValueOf(r))
+	printers := extractPrinters(reflect.ValueOf(r))
 	expect := []Printer{
 		result.Title{Name: "Example for structured result"},
 		item.Short{
@@ -54,9 +67,19 @@ func Test_extractPrinter(t *testing.T) {
 			Description: "aaaaa",
 			Result:      "value",
 		},
+		item.Short{
+			Name:        "b1",
+			Description: "b1",
+			Result:      "b1",
+		},
+		item.Short{
+			Name:        "b2",
+			Description: "b2",
+			Result:      "b2",
+		},
 		item.Bool{
-			Name:        "Rule B",
-			Description: "bbbbb",
+			Name:        "Rule C",
+			Description: "ccccc",
 			Result:      false,
 		},
 	}
@@ -69,14 +92,16 @@ func TestWorker_Print(t *testing.T) {
 		s := printer.Print(r)
 		expect := `===========Example for structured result===========
 Rule A:			value	# aaaaa
-[N]  Rule B	# bbbbb
+b1:			b1	# b1
+b2:			b2	# b2
+[N]  Rule C	# ccccc
 `
 		assert.Equal(t, expect, s)
 	}
 	{
 		printer := NewWorker(TypeJson)
 		s := printer.Print(r)
-		expect := `{"Name":{"name":"Example for structured result"},"Nested":{"rule_a":{"name":"Rule A","description":"aaaaa","result":"value"}},"rule_b":{"name":"Rule B","description":"bbbbb","result":false},"rule_c":{"name":"Rule C","description":"ccccc","result":"word"}}`
+		expect := `{"Name":{"name":"Example for structured result"},"Nested":{"rule_a":{"name":"Rule A","description":"aaaaa","result":"value"}},"Array":[{"name":"b1","description":"b1","result":"b1"},{"name":"b2","description":"b2","result":"b2"}],"rule_c":{"name":"Rule C","description":"ccccc","result":false},"rule_d":{"name":"Rule D","description":"ddddd","result":"word"}}`
 		assert.Equal(t, expect, s)
 	}
 	{
