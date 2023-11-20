@@ -1,7 +1,8 @@
 package checksec
 
 import (
-	"fmt"
+	vul2 "github.com/ctrsploit/sploit-spec/example/xsploit/pkg/vul"
+	"github.com/ctrsploit/sploit-spec/pkg/vul"
 	"github.com/urfave/cli/v2"
 )
 
@@ -14,7 +15,14 @@ var (
 		Name:  CommandNameAuto,
 		Usage: "auto",
 		Action: func(context *cli.Context) (err error) {
-			fmt.Println("TODO")
+			vulnerabilities := vul.Vulnerabilities{
+				vul2.CVE_2099_9999_v1,
+			}
+			err = vulnerabilities.Check()
+			if err != nil {
+				return
+			}
+			vulnerabilities.Output()
 			return
 		},
 	}
