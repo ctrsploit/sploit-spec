@@ -80,7 +80,7 @@ func InstallGlobalFlagColorfulFlag(app *cli.App) {
 		flag := ctx.Bool("colorful")
 		if flag {
 			colorful.O = colorful.Colorful{}
-			Printer = printer.NewWorker(printer.TypeColorful)
+			printer.Printer = printer.NewWorker(printer.TypeColorful)
 		}
 		return
 	}
@@ -98,7 +98,7 @@ func InstallGlobalFlagJsonFlag(app *cli.App) {
 		}
 		flag := ctx.Bool("json")
 		if flag {
-			Printer = printer.NewWorker(printer.TypeJson)
+			printer.Printer = printer.NewWorker(printer.TypeJson)
 		}
 		return
 	}

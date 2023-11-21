@@ -60,7 +60,7 @@ var r = Result{
 
 func Test_extractPrinter(t *testing.T) {
 	printers := extractPrinters(reflect.ValueOf(r))
-	expect := []Printer{
+	expect := []Interface{
 		result.Title{Name: "Example for structured result"},
 		item.Short{
 			Name:        "Rule A",

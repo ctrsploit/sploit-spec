@@ -2,8 +2,8 @@ package prerequisite
 
 import (
 	"fmt"
-	"github.com/ctrsploit/sploit-spec/pkg/app"
 	"github.com/ctrsploit/sploit-spec/pkg/log"
+	"github.com/ctrsploit/sploit-spec/pkg/printer"
 	"github.com/ctrsploit/sploit-spec/pkg/result"
 	"github.com/ctrsploit/sploit-spec/pkg/result/item"
 )
@@ -69,6 +69,6 @@ func (p *BasePrerequisite) Output() {
 			Result:      p.Satisfied,
 		},
 	}
-	log.Logger.Debugf("prerequisite\n%s\n", app.Printer.Print(r))
+	log.Logger.Debugf("prerequisite\n%s\n", printer.Printer.Print(r))
 	return
 }
