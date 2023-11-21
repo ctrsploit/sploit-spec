@@ -7,6 +7,7 @@ import (
 )
 
 type Vulnerabilities []Vulnerability
+type Result map[string]printer.Interface
 
 func (vulnerabilities Vulnerabilities) Check() (err error) {
 	for _, v := range vulnerabilities {
@@ -19,13 +20,13 @@ func (vulnerabilities Vulnerabilities) Check() (err error) {
 }
 
 func (vulnerabilities Vulnerabilities) Output() {
-	var result []item.Bool
+	result := Result{}
 	for _, v := range vulnerabilities {
-		result = append(result, item.Bool{
+		result[v.GetName()] = item.Bool{
 			Name:        v.GetName(),
 			Description: v.GetDescription(),
 			Result:      v.GetVulnerabilityExists(),
-		})
+		}
 	}
 	fmt.Println(printer.Printer.Print(result))
 	return

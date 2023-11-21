@@ -5,6 +5,7 @@ import (
 	"github.com/ctrsploit/sploit-spec/example/xsploit/cmd/xsploit/checksec"
 	"github.com/ctrsploit/sploit-spec/example/xsploit/cmd/xsploit/env"
 	"github.com/ctrsploit/sploit-spec/example/xsploit/cmd/xsploit/exploit"
+	"github.com/ctrsploit/sploit-spec/example/xsploit/cmd/xsploit/vul"
 	"github.com/ctrsploit/sploit-spec/pkg/app"
 	"github.com/ctrsploit/sploit-spec/pkg/version"
 	"github.com/urfave/cli/v2"
@@ -26,6 +27,7 @@ func main() {
 			env.Command,
 			checksec.Command,
 			exploit.Command,
+			vul.Command,
 			version.Command,
 		},
 	}

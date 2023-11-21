@@ -8,5 +8,7 @@ var Command = &cli.Command{
 	Usage:   "Collect information",
 	Subcommands: []*cli.Command{
 		Auto,
+		Second,
+		Minute,
 	},
 }
