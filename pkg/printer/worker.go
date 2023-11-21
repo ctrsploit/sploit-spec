@@ -17,7 +17,7 @@ func NewWorker(t int) *Worker {
 	}
 }
 
-func extractPrinter(field reflect.Value) (printer Printer, drop bool) {
+func extractPrinter(field reflect.Value) (printer Interface, drop bool) {
 	if p, ok := field.Interface().(item.Bool); ok {
 		printer = p
 		if !p.Result {
@@ -26,7 +26,7 @@ func extractPrinter(field reflect.Value) (printer Printer, drop bool) {
 			return
 		}
 	}
-	if p, ok := field.Interface().(Printer); ok {
+	if p, ok := field.Interface().(Interface); ok {
 		printer = p
 		return
 	}
@@ -35,7 +35,12 @@ func extractPrinter(field reflect.Value) (printer Printer, drop bool) {
 
 // extractPrinter extracts Printers from a result struct
 // if there's an item.Bool, and it's result is false, drop results after the item.Bool
-func extractPrinters(v reflect.Value) (printers []Printer) {
+func extractPrinters(v reflect.Value) (printers []Interface) {
+	printer, _ := extractPrinter(v)
+	if printer != nil {
+		printers = append(printers, printer)
+		return
+	}
 	switch v.Kind() {
 	case reflect.Slice:
 		for i := 0; i < v.Len(); i++ {
@@ -78,3 +83,6 @@ func (w Worker) Print(object interface{}) (s string) {
 	}
 	return
 }
+
+// Printer is the default worker, default equal to Text, will be overwritten if --colorful/--json is set
+var Printer = NewWorker(TypeText)

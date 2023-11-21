@@ -2,7 +2,7 @@ package vul
 
 import (
 	"fmt"
-	"github.com/ctrsploit/sploit-spec/pkg/app"
+	"github.com/ctrsploit/sploit-spec/pkg/printer"
 	"github.com/ctrsploit/sploit-spec/pkg/result/item"
 )
 
@@ -27,6 +27,6 @@ func (vulnerabilities Vulnerabilities) Output() {
 			Result:      v.GetVulnerabilityExists(),
 		})
 	}
-	fmt.Println(app.Printer.Print(result))
+	fmt.Println(printer.Printer.Print(result))
 	return
 }

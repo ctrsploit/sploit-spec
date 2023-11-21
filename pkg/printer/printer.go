@@ -13,7 +13,7 @@ const (
 	TypeDefault = TypeText
 )
 
-type Printer interface {
+type Interface interface {
 	Text() string
 	Colorful() string
 	IsEmpty() bool
@@ -22,11 +22,11 @@ type Printer interface {
 type PrintFunc func(p interface{}) (s string)
 
 func Text(p interface{}) (s string) {
-	return p.(Printer).Text()
+	return p.(Interface).Text()
 }
 
 func Colorful(p interface{}) (s string) {
-	return p.(Printer).Colorful()
+	return p.(Interface).Colorful()
 }
 
 func Json(p interface{}) (s string) {
@@ -51,7 +51,7 @@ func GetPrinter(t int) PrintFunc {
 	return nil
 }
 
-func Print(print PrintFunc, printers ...Printer) (s string) {
+func Print(print PrintFunc, printers ...Interface) (s string) {
 	for _, i := range printers {
 		if !i.IsEmpty() {
 			s += print(i) + "\n"

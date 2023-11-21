@@ -5,6 +5,8 @@ import (
 	"github.com/ctrsploit/sploit-spec/pkg/log"
 	"github.com/ctrsploit/sploit-spec/pkg/prerequisite"
 	"github.com/ctrsploit/sploit-spec/pkg/prerequisite/vulnerability"
+	"github.com/ctrsploit/sploit-spec/pkg/printer"
+	"github.com/ctrsploit/sploit-spec/pkg/result/item"
 	"github.com/ssst0n3/awesome_libs/awesome_error"
 )
 
@@ -17,6 +19,8 @@ type Vulnerability interface {
 	Info()
 	// CheckSec whether vulnerability exists
 	CheckSec() (bool, error)
+	// Output shows checksec result
+	Output()
 	// Exploitable whether vulnerability can be exploited,
 	// will be called automatically before Exploit()
 	Exploitable() (bool, error)
@@ -56,6 +60,15 @@ func (v *BaseVulnerability) CheckSec() (vulnerabilityExists bool, err error) {
 	v.VulnerabilityExists = vulnerabilityExists
 	v.CheckSecHaveRan = true
 	return
+}
+
+func (v *BaseVulnerability) Output() {
+	result := item.Bool{
+		Name:        v.GetName(),
+		Description: v.GetDescription(),
+		Result:      v.GetVulnerabilityExists(),
+	}
+	fmt.Println(printer.Printer.Print(result))
 }
 
 func (v *BaseVulnerability) Exploitable() (satisfied bool, err error) {
