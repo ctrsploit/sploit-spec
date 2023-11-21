@@ -32,6 +32,6 @@ func (cve CVE_2099_9999) Exploit() (err error) {
 	if err != nil {
 		return
 	}
-	fmt.Println("CVE-2099-9999 exploit")
+	fmt.Println("CVE-2099-9999 has exploited")
 	return
 }

@@ -1,4 +1,4 @@
-package checksec
+package vul
 
 import (
 	"github.com/ctrsploit/sploit-spec/example/xsploit/pkg/vul"
@@ -7,11 +7,10 @@ import (
 )
 
 var Command = &cli.Command{
-	Name:    "checksec",
-	Aliases: []string{"c"},
-	Usage:   "check security inside a container",
+	Name:    "vul",
+	Aliases: []string{"v"},
+	Usage:   "list vulnerabilities",
 	Subcommands: []*cli.Command{
-		Auto,
-		app.Vul2ChecksecCmd(vul.CVE_2099_9999_v1, []string{"2099"}),
+		app.Vul2VulCmd(vul.CVE_2099_9999_v1, []string{"2099"}),
 	},
 }
