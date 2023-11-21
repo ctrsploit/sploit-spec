@@ -1,6 +1,6 @@
 ---
 
-version: v0.3.0
+version: v0.3.1
 
 ---
 
@@ -74,4 +74,6 @@ E.g.
 
 ![](./images/colorful.png)
 
-Coding see [github.com/ctrsploit/sploit-spec/pkg/printer/example_test.go](https://github.com/ctrsploit/sploit-spec/blob/main/pkg/printer/example_test.go)
+Coding examples see 
+* [/pkg/printer/printer_example_test.go](https://github.com/ctrsploit/sploit-spec/blob/main/pkg/printer/printer_example_test.go)
+* [/example/xsploit/env/auto.go](https://github.com/ctrsploit/sploit-spec/blob/main/example/xsploit/env/auto.go)
