@@ -1,7 +1,7 @@
 package vul
 
 import (
-	"github.com/ctrsploit/sploit-spec/example/xsploit/pkg/vul"
+	"github.com/ctrsploit/sploit-spec/example/xsploit/vul"
 	"github.com/ctrsploit/sploit-spec/pkg/app"
 	"github.com/urfave/cli/v2"
 )

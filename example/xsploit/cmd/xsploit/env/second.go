@@ -2,7 +2,7 @@ package env
 
 import (
 	"fmt"
-	"github.com/ctrsploit/sploit-spec/example/xsploit/pkg/env"
+	"github.com/ctrsploit/sploit-spec/example/xsploit/env"
 	"github.com/ctrsploit/sploit-spec/pkg/log"
 	"github.com/ctrsploit/sploit-spec/pkg/printer"
 	"github.com/urfave/cli/v2"
