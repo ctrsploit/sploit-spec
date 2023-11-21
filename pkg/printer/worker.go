@@ -42,6 +42,19 @@ func extractPrinters(v reflect.Value) (printers []Interface) {
 		return
 	}
 	switch v.Kind() {
+	case reflect.Map:
+		for _, key := range v.MapKeys() {
+			field := v.MapIndex(key)
+			printer, drop := extractPrinter(field)
+			if printer != nil {
+				printers = append(printers, printer)
+				if drop {
+					return
+				}
+			} else {
+				printers = append(printers, extractPrinters(field)...)
+			}
+		}
 	case reflect.Slice:
 		for i := 0; i < v.Len(); i++ {
 			field := v.Index(i)
