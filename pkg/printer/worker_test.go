@@ -59,31 +59,75 @@ var r = Result{
 }
 
 func Test_extractPrinter(t *testing.T) {
-	printers := extractPrinters(reflect.ValueOf(r))
-	expect := []Interface{
-		result.Title{Name: "Example for structured result"},
-		item.Short{
-			Name:        "Rule A",
-			Description: "aaaaa",
-			Result:      "value",
-		},
-		item.Short{
-			Name:        "b1",
-			Description: "b1",
-			Result:      "b1",
-		},
-		item.Short{
-			Name:        "b2",
-			Description: "b2",
-			Result:      "b2",
-		},
-		item.Bool{
-			Name:        "Rule C",
-			Description: "ccccc",
+	t.Run("pass printer after false item.Bool", func(t *testing.T) {
+		printers := extractPrinters(reflect.ValueOf(r))
+		expect := []Interface{
+			result.Title{Name: "Example for structured result"},
+			item.Short{
+				Name:        "Rule A",
+				Description: "aaaaa",
+				Result:      "value",
+			},
+			item.Short{
+				Name:        "b1",
+				Description: "b1",
+				Result:      "b1",
+			},
+			item.Short{
+				Name:        "b2",
+				Description: "b2",
+				Result:      "b2",
+			},
+			item.Bool{
+				Name:        "Rule C",
+				Description: "ccccc",
+				Result:      false,
+			},
+		}
+		assert.Equal(t, expect, printers)
+	})
+	t.Run("slice", func(t *testing.T) {
+		r := []item.Bool{
+			{
+				Name:        "a",
+				Description: "a",
+				Result:      false,
+			},
+			{
+				Name:        "b",
+				Description: "b",
+				Result:      true,
+			},
+		}
+		expect := []Interface{item.Bool{
+			Name:        "a",
+			Description: "a",
 			Result:      false,
-		},
-	}
-	assert.Equal(t, expect, printers)
+		}}
+		printers := extractPrinters(reflect.ValueOf(r))
+		assert.Equal(t, expect, printers)
+	})
+	t.Run("map", func(t *testing.T) {
+		r := map[string]item.Bool{
+			"a": {
+				Name:        "a",
+				Description: "a",
+				Result:      false,
+			},
+			"b": {
+				Name:        "b",
+				Description: "b",
+				Result:      true,
+			},
+		}
+		expect := []Interface{item.Bool{
+			Name:        "a",
+			Description: "a",
+			Result:      false,
+		}}
+		printers := extractPrinters(reflect.ValueOf(r))
+		assert.Equal(t, expect, printers)
+	})
 }
 
 func TestWorker_Print(t *testing.T) {
