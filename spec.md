@@ -1,12 +1,12 @@
 ---
 
-version: v0.3.1
+version: v0.4.0
 
 ---
 
 # Sploit Specification
 
-## Top level commands
+## 1. Top level commands
 
 | Commands     | Alias | Description                                              |
 |--------------|-------|----------------------------------------------------------|
@@ -17,7 +17,7 @@ version: v0.3.1
 | version      | -     | show sploit tool's version                               |
 | spec-version | -     | show which spec does the sploit tool use                 |
 
-## version command
+### 1.1 version command
 
 execute `xsploit version`, output:
 
@@ -34,7 +34,175 @@ $ ctrsploit version
 ctrsploit public version v0.5.0+dev, build 6165b8e at 2023-05-31T07:36:02Z
 ```
 
-## suggested directory structure
+### 1.2 checksec command
+
+check vulnerability exists
+
+e.g.
+
+```
+❯ ./bin/release/xsploit_linux_amd64 checksec     
+NAME:
+   xsploit checksec - check security inside a container
+
+USAGE:
+   xsploit checksec command [command options] [arguments...]
+
+COMMANDS:
+   auto                 auto
+   CVE-2099-9999, 2099  Description of CVE-2099-9999
+   help, h              Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+
+❯ ./bin/release/xsploit_linux_amd64 checksec 2099
+[Y]  CVE-2099-9999      # Description of CVE-2099-9999
+```
+
+#### 1.2.1 Vulnerability
+
+Vulnerability is an interface provide these methods:
+
+[github.com/ctrsploit/sploit-spec/pkg/vul.Vulnerability](https://github.com/ctrsploit/sploit-spec/blob/main/pkg/vul/vul.go#L13)
+
+```go
+type Vulnerability interface {
+	// GetName returns a one word name; may be used as command name
+	GetName() string
+	// GetDescription return usage
+	GetDescription() string
+	GetVulnerabilityExists() bool
+	Info()
+	// CheckSec whether vulnerability exists
+	CheckSec() (bool, error)
+	// Output shows checksec result
+	Output()
+	// Exploitable whether vulnerability can be exploited,
+	// will be called automatically before Exploit()
+	Exploitable() (bool, error)
+	Exploit() (err error)
+}
+```
+
+What developer should do is implement a Vulnerability object, and convert it to a cli.Command.
+
+```go
+var Command = &cli.Command{
+	Name:    "checksec",
+	Aliases: []string{"c"},
+	Usage:   "check security inside a container",
+	Subcommands: []*cli.Command{
+		app.Vul2ChecksecCmd(vul.CVE_2099_9999_v1, []string{"2099"}),
+	},
+}
+```
+
+```go
+var (
+	CVE_2099_9999_v1 = &CVE_2099_9999{
+		vul.BaseVulnerability{
+			Name:        "CVE-2099-9999",
+			Description: "Description of CVE-2099-9999",
+			CheckSecPrerequisites: prerequisite.Prerequisites{
+				&prerequisite2.EvenTime,
+			},
+			ExploitablePrerequisites: prerequisite.Prerequisites{
+				&user.MustBeRoot,
+			},
+		},
+	}
+)
+
+func (cve CVE_2099_9999) Exploit() (err error) {
+	err = cve.BaseVulnerability.Exploit()
+	if err != nil {
+		return
+	}
+	fmt.Println("CVE-2099-9999 has exploited")
+	return
+}
+```
+
+There's a 'BaseClass' BaseVulnerability implemented some methods:
+
+[github.com/ctrsploit/sploit-spec/pkg/vul.BaseVulnerability](https://github.com/ctrsploit/sploit-spec/blob/main/pkg/vul/vul.go#L30)
+
+```go
+type BaseVulnerability struct {
+	Name                     string                     `json:"name"`
+	Description              string                     `json:"description"`
+	VulnerabilityExists      bool                       `json:"vulnerability_exists"`
+	CheckSecHaveRan          bool                       `json:"-"`
+	CheckSecPrerequisites    prerequisite.Prerequisites `json:"-"`
+	ExploitablePrerequisites prerequisite.Prerequisites `json:"-"`
+}
+
+func (v *BaseVulnerability) CheckSec() (vulnerabilityExists bool, err error) {
+    vulnerabilityExists, err = v.CheckSecPrerequisites.Satisfied()
+    if err != nil {
+        return
+    }
+    v.VulnerabilityExists = vulnerabilityExists
+    v.CheckSecHaveRan = true
+    return
+}
+```
+
+Vulnerability has two types of prerequisite:
+
+1. Whether vulnerability exists?
+2. Whether vulnerability can be exploited? (We may do not require permissions to execute exploit but the vulnerability exists)
+
+CheckSec method actually check the first type prerequisite.
+
+#### 1.2.2 prerequisite
+
+Prerequisite is an Interface provide these methods:
+
+[github.com/ctrsploit/sploit-spec/pkg/prerequisite.Interface](https://github.com/ctrsploit/sploit-spec/blob/main/pkg/prerequisite/prerequisite.go#L11)
+
+```go
+type Interface interface {
+	Check() error
+	Output()
+	GetSatisfied() bool
+}
+```
+
+What developer should do is implement a Prerequisite object.
+
+e.g.
+
+[github.com/ctrsploit/sploit-spec/pkg/prerequisite/user](https://github.com/ctrsploit/sploit-spec/blob/main/pkg/prerequisite/user/user.go#L10)
+
+```go
+type MustBe struct {
+	ExpectedUser uint
+	prerequisite.BasePrerequisite
+}
+
+func (p *MustBe) Check() (err error) {
+    err = p.BasePrerequisite.Check()
+    if err != nil {
+        return
+    }
+    current, err := user.Current()
+    if err != nil {
+        awesome_error.CheckErr(err)
+        return
+    }
+    u, err := strconv.Atoi(current.Uid)
+    if err != nil {
+        awesome_error.CheckErr(err)
+        return
+    }
+    p.Satisfied = uint(u) == p.ExpectedUser
+    return
+}
+```
+
+## 2. suggested directory structure
 
 According to https://github.com/golang-standards/project-layout:
 
@@ -54,7 +222,7 @@ According to https://github.com/golang-standards/project-layout:
 * /test: Additional external test apps and test data.
 * /pkg: Library code that's ok to use by external applications.
 
-## json/text/colorful output mode
+## 3. json/text/colorful output mode
 
 x-sploit provide 3 output options:
 
