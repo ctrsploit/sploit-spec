@@ -58,6 +58,10 @@ OPTIONS:
 
 ❯ ./bin/release/xsploit_linux_amd64 checksec 2099
 [Y]  CVE-2099-9999      # Description of CVE-2099-9999
+❯ ./bin/release/xsploit_linux_amd64 --json checksec 2099
+{"name":"CVE-2099-9999","description":"Description of CVE-2099-9999","result":false}
+❯ ./bin/release/xsploit_linux_amd64 --json checksec auto
+{"CVE-2099-9999":{"name":"CVE-2099-9999","description":"Description of CVE-2099-9999","result":true}}
 ```
 
 #### 1.2.1 Vulnerability
