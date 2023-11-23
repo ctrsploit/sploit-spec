@@ -60,7 +60,7 @@ var r = Result{
 
 func Test_extractPrinter(t *testing.T) {
 	t.Run("pass printer after false item.Bool", func(t *testing.T) {
-		printers := extractPrinters(reflect.ValueOf(r))
+		printers := extractPrinters(reflect.ValueOf(r), true)
 		expect := []Interface{
 			result.Title{Name: "Example for structured result"},
 			item.Short{
@@ -104,7 +104,7 @@ func Test_extractPrinter(t *testing.T) {
 			Description: "a",
 			Result:      false,
 		}}
-		printers := extractPrinters(reflect.ValueOf(r))
+		printers := extractPrinters(reflect.ValueOf(r), true)
 		assert.Equal(t, expect, printers)
 	})
 	t.Run("map", func(t *testing.T) {
@@ -125,7 +125,7 @@ func Test_extractPrinter(t *testing.T) {
 			Description: "a",
 			Result:      false,
 		}}
-		printers := extractPrinters(reflect.ValueOf(r))
+		printers := extractPrinters(reflect.ValueOf(r), true)
 		assert.Equal(t, expect, printers)
 	})
 }
@@ -139,6 +139,8 @@ Rule A:			value	# aaaaa
 b1:			b1	# b1
 b2:			b2	# b2
 [N]  Rule C	# ccccc
+Rule D	# ddddd
+word
 `
 		assert.Equal(t, expect, s)
 	}
