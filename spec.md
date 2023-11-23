@@ -1,6 +1,6 @@
 ---
 
-version: v0.4.0
+version: v0.4.2
 
 ---
 
@@ -61,6 +61,13 @@ OPTIONS:
 ❯ ./bin/release/xsploit_linux_amd64 --json checksec 2099
 {"name":"CVE-2099-9999","description":"Description of CVE-2099-9999","result":false}
 ❯ ./bin/release/xsploit_linux_amd64 --json checksec auto
+{"CVE-2099-9999":{"name":"CVE-2099-9999","description":"Description of CVE-2099-9999","result":true}}
+```
+
+checksec can also be a single binary thanks to [Command2App()](./pkg/app/command.go)
+
+```
+❯ .checksec_linux_amd64 --json a
 {"CVE-2099-9999":{"name":"CVE-2099-9999","description":"Description of CVE-2099-9999","result":true}}
 ```
 
