@@ -131,7 +131,7 @@ func Test_extractPrinter(t *testing.T) {
 }
 
 func TestWorker_Print(t *testing.T) {
-	{
+	t.Run("not drop", func(t *testing.T) {
 		printer := NewWorker(TypeText)
 		s := printer.Print(r)
 		expect := `===========Example for structured result===========
@@ -143,16 +143,27 @@ Rule D	# ddddd
 word
 `
 		assert.Equal(t, expect, s)
-	}
-	{
+	})
+	t.Run("drop", func(t *testing.T) {
+		printer := NewWorker(TypeText)
+		s := printer.PrintDropAfterFalse(r)
+		expect := `===========Example for structured result===========
+Rule A:			value	# aaaaa
+b1:			b1	# b1
+b2:			b2	# b2
+[N]  Rule C	# ccccc
+`
+		assert.Equal(t, expect, s)
+	})
+	t.Run("json", func(t *testing.T) {
 		printer := NewWorker(TypeJson)
 		s := printer.Print(r)
 		expect := `{"Name":{"name":"Example for structured result"},"Nested":{"rule_a":{"name":"Rule A","description":"aaaaa","result":"value"}},"Array":[{"name":"b1","description":"b1","result":"b1"},{"name":"b2","description":"b2","result":"b2"}],"rule_c":{"name":"Rule C","description":"ccccc","result":false},"rule_d":{"name":"Rule D","description":"ddddd","result":"word"}}`
 		assert.Equal(t, expect, s)
-	}
-	{
+	})
+	t.Run("colorful", func(t *testing.T) {
 		printer := NewWorker(TypeColorful)
 		s := printer.Print(r)
 		fmt.Println(s)
-	}
+	})
 }

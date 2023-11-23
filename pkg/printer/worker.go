@@ -85,15 +85,23 @@ func extractPrinters(v reflect.Value, dropAfterFalse bool) (printers []Interface
 	return
 }
 
-func (w Worker) Print(object interface{}) (s string) {
+func (w Worker) print(object interface{}, dropAfterFalse bool) (s string) {
 	switch w.Type {
 	case TypeJson:
 		s = w.PrintFunc(object)
 	default:
-		printers := extractPrinters(reflect.ValueOf(object), false)
+		printers := extractPrinters(reflect.ValueOf(object), dropAfterFalse)
 		s = Print(w.PrintFunc, printers...)
 	}
 	return
+}
+
+func (w Worker) PrintDropAfterFalse(object interface{}) (s string) {
+	return w.print(object, true)
+}
+
+func (w Worker) Print(object interface{}) (s string) {
+	return w.print(object, false)
 }
 
 // Printer is the default worker, default equal to Text, will be overwritten if --colorful/--json is set
