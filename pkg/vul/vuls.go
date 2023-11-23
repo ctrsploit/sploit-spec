@@ -11,12 +11,12 @@ type Result map[string]printer.Interface
 
 func (vulnerabilities Vulnerabilities) Check() (err error) {
 	for _, v := range vulnerabilities {
-		_, err = v.CheckSec()
+		_, err := v.CheckSec()
 		if err != nil {
-			return
+			continue
 		}
 	}
-	return
+	return nil
 }
 
 func (vulnerabilities Vulnerabilities) Output() {

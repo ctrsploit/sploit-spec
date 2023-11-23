@@ -17,26 +17,25 @@ func NewWorker(t int) *Worker {
 	}
 }
 
-func extractPrinter(field reflect.Value) (printer Interface, drop bool) {
+func extractPrinter(field reflect.Value, dropAfterFalse bool) (printer Interface, drop bool) {
 	if p, ok := field.Interface().(item.Bool); ok {
 		printer = p
 		if !p.Result {
 			// drop result after False item.Bool
 			drop = true
-			return
 		}
 	}
 	if p, ok := field.Interface().(Interface); ok {
 		printer = p
-		return
 	}
+	drop = drop && dropAfterFalse
 	return
 }
 
 // extractPrinter extracts Printers from a result struct
 // if there's an item.Bool, and it's result is false, drop results after the item.Bool
-func extractPrinters(v reflect.Value) (printers []Interface) {
-	printer, _ := extractPrinter(v)
+func extractPrinters(v reflect.Value, dropAfterFalse bool) (printers []Interface) {
+	printer, _ := extractPrinter(v, dropAfterFalse)
 	if printer != nil {
 		printers = append(printers, printer)
 		return
@@ -45,40 +44,40 @@ func extractPrinters(v reflect.Value) (printers []Interface) {
 	case reflect.Map:
 		for _, key := range v.MapKeys() {
 			field := v.MapIndex(key)
-			printer, drop := extractPrinter(field)
+			printer, drop := extractPrinter(field, dropAfterFalse)
 			if printer != nil {
 				printers = append(printers, printer)
 				if drop {
 					return
 				}
 			} else {
-				printers = append(printers, extractPrinters(field)...)
+				printers = append(printers, extractPrinters(field, dropAfterFalse)...)
 			}
 		}
 	case reflect.Slice:
 		for i := 0; i < v.Len(); i++ {
 			field := v.Index(i)
-			printer, drop := extractPrinter(field)
+			printer, drop := extractPrinter(field, dropAfterFalse)
 			if printer != nil {
 				printers = append(printers, printer)
 				if drop {
 					return
 				}
 			} else {
-				printers = append(printers, extractPrinters(field)...)
+				printers = append(printers, extractPrinters(field, dropAfterFalse)...)
 			}
 		}
 	case reflect.Struct:
 		for i := 0; i < v.Type().NumField(); i++ {
 			field := v.Field(i)
-			printer, drop := extractPrinter(field)
+			printer, drop := extractPrinter(field, dropAfterFalse)
 			if printer != nil {
 				printers = append(printers, printer)
 				if drop {
 					return
 				}
 			} else {
-				printers = append(printers, extractPrinters(field)...)
+				printers = append(printers, extractPrinters(field, dropAfterFalse)...)
 			}
 		}
 	default:
@@ -91,7 +90,7 @@ func (w Worker) Print(object interface{}) (s string) {
 	case TypeJson:
 		s = w.PrintFunc(object)
 	default:
-		printers := extractPrinters(reflect.ValueOf(object))
+		printers := extractPrinters(reflect.ValueOf(object), false)
 		s = Print(w.PrintFunc, printers...)
 	}
 	return

@@ -11,8 +11,9 @@ const (
 
 var (
 	Command = &cli.Command{
-		Name:  CommandNameAuto,
-		Usage: "auto",
+		Name:    CommandNameAuto,
+		Usage:   "auto gathering information, detect vulnerabilities and run exploits",
+		Aliases: []string{"a"},
 		Action: func(context *cli.Context) (err error) {
 			fmt.Println("TODO")
 			return
