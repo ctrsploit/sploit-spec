@@ -56,7 +56,13 @@ func InstallGlobalFlagDebug(app *cli.App, appLogger *logrus.Logger) {
 			appLogger.SetFormatter(&logrus.TextFormatter{
 				ForceColors: true,
 			})
+			appLogger.Debug("debug mode on")
+
 			libraryLogger.Logger.Level = logrus.DebugLevel
+			libraryLogger.Logger.SetReportCaller(true)
+			libraryLogger.Logger.SetFormatter(&logrus.TextFormatter{
+				ForceColors: true,
+			})
 			libraryLogger.Logger.Debug("debug mode on")
 		}
 		return
