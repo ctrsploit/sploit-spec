@@ -1,6 +1,6 @@
 ---
 
-version: v0.4.2
+version: v0.4.3
 
 ---
 
@@ -213,25 +213,25 @@ func (p *MustBe) Check() (err error) {
 }
 ```
 
-## 2. suggested directory structure
+## 2. suggested file structure
 
 According to https://github.com/golang-standards/project-layout:
 
 * /bin: contains the built binary
     * /release
 * /cmd
-    * /xsploit: the cli directory
-        * /env: top level command env and it's subcommands' cli.Command definition
-        * /exploit: top level command exploit and it's subcommands' cli.Command definition
-        * /checksec: top level command checksec and it's subcommands' cli.Command definition
-        * /auto: top level command auto and it's subcommands' cli.Command definition
-        * /version: top level command version and it's subcommands' cli.Command definition
-* /env: env implementations
-* /exploit: exploit implementations
-* /checksec: checksec implementations
-* /version: version implementations
-* /test: Additional external test apps and test data.
-* /pkg: Library code that's ok to use by external applications.
+    * /xsploit/: the cli directory
+        * /env/: top level command env and it's subcommands' cli.Command definition
+        * /exploit/: top level command exploit and it's subcommands' cli.Command definition
+        * /checksec/: top level command checksec and it's subcommands' cli.Command definition
+        * /auto/: top level command auto and it's subcommands' cli.Command definition
+        * /version/: top level command version and it's subcommands' cli.Command definition
+* /env/: env implementations
+* /exploit/: exploit implementations
+* /checksec/: checksec implementations
+* /version: a file contains version information
+* /test/: Additional external test apps and test data.
+* /pkg/: Library code that's ok to use by external applications.
 
 ## 3. json/text/colorful output mode
 
