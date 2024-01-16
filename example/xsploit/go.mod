@@ -1,6 +1,6 @@
 module xsploit
 
-go 1.21.6
+go 1.21.4
 
 require (
 	github.com/ctrsploit/sploit-spec v0.4.3
