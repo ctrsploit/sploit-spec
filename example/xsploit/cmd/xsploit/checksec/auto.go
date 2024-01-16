@@ -1,9 +1,9 @@
 package checksec
 
 import (
-	vul2 "github.com/ctrsploit/sploit-spec/example/xsploit/vul"
 	"github.com/ctrsploit/sploit-spec/pkg/vul"
 	"github.com/urfave/cli/v2"
+	vul2 "xsploit/vul"
 )
 
 const (
