@@ -1,8 +1,8 @@
 package env
 
 import (
-	"github.com/ctrsploit/sploit-spec/example/xsploit/env"
 	"github.com/urfave/cli/v2"
+	"xsploit/env"
 )
 
 const (

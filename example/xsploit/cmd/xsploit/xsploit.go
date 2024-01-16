@@ -1,15 +1,15 @@
 package main
 
 import (
-	"github.com/ctrsploit/sploit-spec/example/xsploit/cmd/xsploit/auto"
-	"github.com/ctrsploit/sploit-spec/example/xsploit/cmd/xsploit/checksec"
-	"github.com/ctrsploit/sploit-spec/example/xsploit/cmd/xsploit/env"
-	"github.com/ctrsploit/sploit-spec/example/xsploit/cmd/xsploit/exploit"
-	"github.com/ctrsploit/sploit-spec/example/xsploit/cmd/xsploit/vul"
 	"github.com/ctrsploit/sploit-spec/pkg/app"
 	"github.com/ctrsploit/sploit-spec/pkg/version"
 	"github.com/urfave/cli/v2"
 	"os"
+	"xsploit/cmd/xsploit/auto"
+	"xsploit/cmd/xsploit/checksec"
+	"xsploit/cmd/xsploit/env"
+	"xsploit/cmd/xsploit/exploit"
+	"xsploit/cmd/xsploit/vul"
 )
 
 const usage = `An example sploit tool follows sploit-spec`

@@ -2,10 +2,10 @@ package vul
 
 import (
 	"fmt"
-	prerequisite2 "github.com/ctrsploit/sploit-spec/example/xsploit/pkg/prerequisite"
 	"github.com/ctrsploit/sploit-spec/pkg/prerequisite"
 	"github.com/ctrsploit/sploit-spec/pkg/prerequisite/user"
 	"github.com/ctrsploit/sploit-spec/pkg/vul"
+	prerequisite2 "xsploit/pkg/prerequisite"
 )
 
 type CVE_2099_9999 struct {
