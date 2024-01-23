@@ -64,6 +64,8 @@ OPTIONS:
 {"CVE-2099-9999":{"name":"CVE-2099-9999","description":"Description of CVE-2099-9999","result":true}}
 ```
 
+> There can be submodules under checksec. e.g. checksec mysql CVE-2088-8888
+
 checksec can also be a single binary thanks to [Command2App()](./pkg/app/command.go)
 
 ```
