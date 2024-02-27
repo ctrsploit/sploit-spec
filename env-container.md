@@ -16,5 +16,5 @@
 
 | Advanced | Description |
 | --- | --- |
-| runtime version | guess runtime version range |
+| version | runtime version range |
 | ctr-cnt | host container count |
