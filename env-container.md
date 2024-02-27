@@ -4,6 +4,7 @@
 | --- | --- |
 | type | runtime type, NotInContainer/K8s/Containerd/Docker/... |
 | graphdriver | graphdriver type |
+| kernel-version | 
 
 | Linux Security Features | Description |
 | --- | --- |
@@ -16,5 +17,5 @@
 
 | Advanced | Description |
 | --- | --- |
-| version | runtime version range |
+| runtime-version | runtime version range |
 | ctr-cnt | host container count |
