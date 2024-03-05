@@ -215,6 +215,13 @@ func (p *MustBe) Check() (err error) {
 }
 ```
 
+### 1.3 env
+
+The env list to be collected:
+
+* [container](./env-container.md)
+* ...
+
 ## 2. suggested file structure
 
 According to https://github.com/golang-standards/project-layout:
