@@ -1,5 +1,5 @@
 package app
 
 type Env struct {
-  Type AppType `json:type`
+  Type WebServerType `json:type`
 }
