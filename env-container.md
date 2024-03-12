@@ -23,3 +23,7 @@
 |-----------------|-----------------------|
 | runtime-version | runtime version range |
 | ctr-cnt         | host container count  |
+
+| Helper | Description |
+| ---- | --- |
+| sudo | ... |
