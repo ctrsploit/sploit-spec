@@ -1,3 +1,7 @@
 
-1. 枚举/dev下文件收集设备信息
-2. 执行特定命令收集设备信息（lsmod、lshw..）
+| Basic         | Description                                     |
+| ------------- | ----------------------------------------------- |
+| cpu-info      |  arch/xxx ...                                   |
+| device-info   |  virtio-net/virtio-scsi/cirrus ...              |
+| hypervisor    |  kvm/xen ...                                    |
+
