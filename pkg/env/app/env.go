@@ -1,9 +1,6 @@
 package app
 
-type WebServerType int
-
-const (
-  Apache WebServerType = iota
-  Nginx
-  Tomcat
-)
+type Env struct {
+	Basic
+	Advance
+}
