@@ -24,20 +24,20 @@ FROM base AS build-env
 ARG GOPROXY
 WORKDIR /root/app
 COPY --from=gox /build/ /usr/local/bin/
-RUN --mount=type=cache,sharing=locked,id=lisploit-build-aptlib,target=/var/lib/apt \
-    --mount=type=cache,sharing=locked,id=lisploit-build-aptcache,target=/var/cache/apt \
+RUN --mount=type=cache,sharing=locked,id=sploit-spc-build-aptlib,target=/var/lib/apt \
+    --mount=type=cache,sharing=locked,id=sploit-spec-build-aptcache,target=/var/cache/apt \
         apt update && apt install -y \
             upx jq
 RUN --mount=type=bind,target=.,rw \
-    --mount=type=cache,target=/root/.cache/go-build,id=lisploit-build \
-    --mount=type=cache,target=/go/pkg/mod,id=lisploit-mod \
+    --mount=type=cache,target=/root/.cache/go-build,id=sploit-spec-build \
+    --mount=type=cache,target=/go/pkg/mod,id=sploit-spec-mod \
     --mount=type=tmpfs,target=/go/src/ \
     GOPROXY=https://goproxy.cn,https://goproxy.io,direct go mod download
 
 FROM build-env AS build
 RUN --mount=type=bind,target=.,rw \
-    --mount=type=cache,target=/root/.cache/go-build,id=lisploit-build \
-    --mount=type=cache,target=/go/pkg/mod,id=lisploit-mod \
+    --mount=type=cache,target=/root/.cache/go-build,id=sploit-spec-build \
+    --mount=type=cache,target=/go/pkg/mod,id=sploit-spec-mod \
     --mount=type=tmpfs,target=/go/src/ \
     make build && mv bin/release /build
 

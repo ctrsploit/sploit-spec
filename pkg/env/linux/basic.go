@@ -1,9 +1,6 @@
-package kernel
+package linux
 
-type KernelType int
-
-const (
-  Euler310 KernelType = iota
-  Euler418
-  HCE510
-)
+type Basic struct {
+	KernelVersion string `json:"kernel_version"`
+	CompileTime string `json:"compile_time"`
+}
