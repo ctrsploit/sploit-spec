@@ -1,6 +1,6 @@
 package vt
 
-type Basic struct {
+type CPU struct {
 	CpuArch        		string `json:"cpu_arch"`
 	Vulnerable 		string `json:"vulnerable"`
 }
