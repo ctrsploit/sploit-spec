@@ -1,6 +1,6 @@
-package app
+package vt
 
 type Env struct {
 	Basic
-	Advance
+	CPU
 }
