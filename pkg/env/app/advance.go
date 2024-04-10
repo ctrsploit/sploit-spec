@@ -1,8 +1,13 @@
 package app
 
 type Advance struct {
-	OSType        string      `json:"os_type"`
+	OS            OS          `json:"os"`
 	ComponentList []Component `json:"component_list"`
+}
+
+type OS struct {
+	Type    string `json:"type"`
+	Version string `json:"version"`
 }
 
 type Component struct {

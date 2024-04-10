@@ -1,11 +1,11 @@
-| Basic                 | Description                                               |
-|-----------------------|-----------------------------------------------------------|
-| web-server            | Apache/Nginx/Tomcat ...                                   |
-| web-server-version    | x.x.x/unknown                                             |
-| app-framework         | Spring/ThinkPHP/Flask/Django ... (version: x.x.x/unknown) |
-| app-framework-version | x.x.x/unknown                                             |
+| Basic             | Description                                               |
+|-------------------|-----------------------------------------------------------|
+| webserver         | Apache/Nginx/Tomcat ...                                   |
+| webserver-version | x.x.x/unknown                                             |
+| framework         | Spring/ThinkPHP/Flask/Django ... (version: x.x.x/unknown) |
+| framework-version | x.x.x/unknown                                             |
 
-| Advanced  | Description                   |
-|-----------|-------------------------------|
-| os-type   | os type (linux/windows/other) |
-| component | component list                |
+| Advanced  | Description                                          |
+|-----------|------------------------------------------------------|
+| os-info   | os info (linux/windows/other, version: ubuntu 20.04) |
+| component | component list                                       |

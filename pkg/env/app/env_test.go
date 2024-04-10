@@ -20,7 +20,10 @@ func TestEnv(t *testing.T) {
 			},
 		},
 		Advance{
-			OSType: "test",
+			OS: OS{
+				Type:    "linux",
+				Version: "ubuntu 20.04",
+			},
 			ComponentList: []Component{
 				{Name: "fastjson", Version: "1.0.0"},
 				{Name: "test", Version: "1.1.0"},
