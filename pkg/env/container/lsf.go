@@ -45,16 +45,6 @@ type Seccomp struct {
 	Mode             string `json:"mode"`
 }
 
-type NamespaceLevel int
-
-const (
-	LevelUnknown NamespaceLevel = iota
-	LevelBoot
-	LevelChild
-	LevelNotSupported
-	LevelHost = LevelBoot
-)
-
 type Namespace struct {
 	Levels map[string]NamespaceLevel `json:"levels"`
 }

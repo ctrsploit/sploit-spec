@@ -1,15 +1,15 @@
 package container
 
-type Type int
+type ContainerType int
 
 const (
-	NotInContainer Type = iota
+	NotInContainer ContainerType = iota
 	K8s
 	Containerd
 	Docker
 )
 
 type Basic struct {
-	Type          Type   `json:"type"`
-	KernelVersion string `json:"kernel_version"`
+	Type          ContainerType `json:"type"`
+	KernelVersion string        `json:"kernel_version"`
 }
