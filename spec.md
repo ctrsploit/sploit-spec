@@ -222,6 +222,44 @@ The env list to be collected:
 * [container](./env-container.md)
 * ...
 
+#### upload
+
+upload env info to obs.
+
+register the upload subcommand to env command
+```
+var Upload = &cli.Command{
+	Name:    "upload",
+	Aliases: []string{"up"},
+	Usage:   "upload env servicename filename obsurl obshost",
+	Action:  UploadAction,
+}
+```
+the UploadAction is the funciton to collect env info and upload info to obs.
+The upload subcommand has 4 Arguments, including servicename, filename, obsurl, obshots
+```
+	//eg. ECS
+	servicename := context.Args().Get(0)
+	// region_tag.json eg. cn-north7_linux.json
+	filename := context.Args().Get(1)
+	// obsurl 
+	obsurl := context.Args().Get(2)
+	// obshost (if want to hide obs upload behavior), put your real obsurl in here, put the fake url in obsurl
+	obshost := context.Args().Get(3)
+	if servicename == "" {
+		return
+	}
+```
+- servicename: like ECS\CCE
+- filename: tag_region.json (cn-north4_linux.json)
+- obsurl: the target obs url
+- obshost(optional): If you want to hide the obs upload behaviro, Put the real obs url in here, and put the fake url in obsurl.
+
+finally, the subcommand is like:
+```
+xsploit env upload local cn-north7_linux.json http://xxx.com aaa.com
+```
+
 ## 2. suggested file structure
 
 According to https://github.com/golang-standards/project-layout:
