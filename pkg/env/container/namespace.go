@@ -73,5 +73,5 @@ var (
 		// TODO: not sure time_for_children is same as time?
 		NamespaceNameTimeForChildren: NamespaceTypeTime,
 	}
-	MapType2Name = internal.ReverseMap(NamespaceMapName2Type).(map[NamespaceType]string)
+	NamespaceMapType2Name = internal.ReverseMap(NamespaceMapName2Type).(map[NamespaceType]string)
 )
