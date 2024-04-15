@@ -132,8 +132,8 @@ func Test_extractPrinter(t *testing.T) {
 
 func TestWorker_Print(t *testing.T) {
 	t.Run("not drop", func(t *testing.T) {
-		printer := NewWorker(TypeText)
-		s := printer.Print(r)
+		worker := NewWorker(TypeText)
+		s := worker.Print(r)
 		expect := `===========Example for structured result===========
 Rule A:			value	# aaaaa
 b1:			b1	# b1
@@ -145,8 +145,8 @@ word
 		assert.Equal(t, expect, s)
 	})
 	t.Run("drop", func(t *testing.T) {
-		printer := NewWorker(TypeText)
-		s := printer.PrintDropAfterFalse(r)
+		worker := NewWorker(TypeText)
+		s := worker.PrintDropAfterFalse(r)
 		expect := `===========Example for structured result===========
 Rule A:			value	# aaaaa
 b1:			b1	# b1
@@ -156,14 +156,61 @@ b2:			b2	# b2
 		assert.Equal(t, expect, s)
 	})
 	t.Run("json", func(t *testing.T) {
-		printer := NewWorker(TypeJson)
-		s := printer.Print(r)
+		worker := NewWorker(TypeJson)
+		s := worker.Print(r)
 		expect := `{"Name":{"name":"Example for structured result"},"Nested":{"rule_a":{"name":"Rule A","description":"aaaaa","result":"value"}},"Array":[{"name":"b1","description":"b1","result":"b1"},{"name":"b2","description":"b2","result":"b2"}],"rule_c":{"name":"Rule C","description":"ccccc","result":false},"rule_d":{"name":"Rule D","description":"ddddd","result":"word"}}`
 		assert.Equal(t, expect, s)
 	})
 	t.Run("colorful", func(t *testing.T) {
-		printer := NewWorker(TypeColorful)
-		s := printer.Print(r)
+		worker := NewWorker(TypeColorful)
+		s := worker.Print(r)
 		fmt.Println(s)
 	})
+}
+
+func TestUnion(t *testing.T) {
+	type Env struct {
+		Second int `json:"second"`
+		Minute int `json:"minute"`
+	}
+	type Human struct {
+		Second item.Short
+		Minute item.Short
+	}
+
+	e := Env{
+		Second: 1,
+		Minute: 2,
+	}
+	h := Human{
+		Second: item.Short{
+			Name:        "second",
+			Description: "description for second",
+			Result:      fmt.Sprintf("%d", e.Second),
+		},
+		Minute: item.Short{
+			Name:        "minute",
+			Description: "description for minute",
+			Result:      fmt.Sprintf("%d", e.Minute),
+		},
+	}
+	u := result.Union{
+		Machine: e,
+		Human:   h,
+	}
+	{
+		worker := NewWorker(TypeJson)
+		s := worker.Print(u)
+		fmt.Println(s)
+	}
+	{
+		worker := NewWorker(TypeText)
+		s := worker.Print(u)
+		fmt.Println(s)
+	}
+	{
+		worker := NewWorker(TypeColorful)
+		s := worker.Print(u)
+		fmt.Println(s)
+	}
 }
