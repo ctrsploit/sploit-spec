@@ -74,17 +74,11 @@ type CGroups struct {
 }
 
 type Filesystem struct {
-	Overlay      `json:"overlay"`
-	DeviceMapper `json:"device_mapper"`
+	Overlay      GraphDriver `json:"overlay"`
+	DeviceMapper GraphDriver `json:"device_mapper"`
 }
 
-type Overlay struct {
-	Loaded   bool   `json:"loaded"`
-	Refcnt   int    `json:"refcnt"`
-	HostPath string `json:"hostPath"`
-}
-
-type DeviceMapper struct {
+type GraphDriver struct {
 	Loaded   bool   `json:"loaded"`
 	Refcnt   int    `json:"refcnt"`
 	HostPath string `json:"hostPath"`
