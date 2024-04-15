@@ -13,12 +13,12 @@ const (
 )  
 
 type Basic struct {
-	hyper_type          string `json:"hyper_type"`
-	qemu_ver 			string `json:"qemu_ver"`
-	dev_list 	     [] DeviceInfo `json:"dev_list"`
+	HyperType          string `json:"hyper_type"`
+	QemuVer 	   string `json:"qemu_ver"`
+	DevList 	   [] DeviceInfo `json:"dev_list"`
 }
 
 type DeviceInfo struct {
-	type 	DeviceType 	`json:"type"`
-	name 	string	 	`json:"name"`
+	Type 	DeviceType 	`json:"type"`
+	Name 	string	 	`json:"name"`
 }

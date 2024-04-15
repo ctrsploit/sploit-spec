@@ -1,7 +1,7 @@
 package app
 
 type Basic struct {
-	WebServer WebServer `json:"web_server"`
+	WebServer WebServer `json:"webserver"`
 	Framework Framework `json:"framework"`
 }
 
