@@ -3,7 +3,7 @@ package container
 type AccessType int
 
 const (
-	AccessDeny Type = iota
+	AccessDeny AccessType = iota
 	AccessAnonymous
 	AccessRead
 	AccessWrite
