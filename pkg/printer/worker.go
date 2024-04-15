@@ -1,6 +1,7 @@
 package printer
 
 import (
+	"github.com/ctrsploit/sploit-spec/pkg/result"
 	"github.com/ctrsploit/sploit-spec/pkg/result/item"
 	"reflect"
 )
@@ -88,8 +89,14 @@ func extractPrinters(v reflect.Value, dropAfterFalse bool) (printers []Interface
 func (w Worker) print(object interface{}, dropAfterFalse bool) (s string) {
 	switch w.Type {
 	case TypeJson:
+		if _, ok := object.(result.Union); ok {
+			object = object.(result.Union).Machine
+		}
 		s = w.PrintFunc(object)
 	default:
+		if _, ok := object.(result.Union); ok {
+			object = object.(result.Union).Human
+		}
 		printers := extractPrinters(reflect.ValueOf(object), dropAfterFalse)
 		s = Print(w.PrintFunc, printers...)
 	}
