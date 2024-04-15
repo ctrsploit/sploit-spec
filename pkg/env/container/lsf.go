@@ -80,6 +80,7 @@ type Filesystem struct {
 
 type GraphDriver struct {
 	Loaded   bool   `json:"loaded"`
+	Used     bool   `json:"used"`
 	Refcnt   int    `json:"refcnt"`
 	HostPath string `json:"hostPath"`
 }
