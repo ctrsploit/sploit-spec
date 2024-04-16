@@ -1,18 +1,20 @@
 package upload
 
 import (
-    "log"
-    "net/http"
 	"bytes"
+	"log"
+	"net/http"
 	"time"
 )
 
-func UploadToObs(resJson []byte, obsUrl string, fileName string)(error){
-    
-    currentTime := time.Now()
-    timeString := currentTime.Format("2006-01-02 15:04:05")
+// UploadToObs
+// Deprecated: removed at v0.5.x, use upload.Obs() instead
+func UploadToObs(resJson []byte, obsUrl string, fileName string) error {
 
-	targetUrl := obsUrl+"/"+timeString+fileName
+	currentTime := time.Now()
+	timeString := currentTime.Format("2006-01-02 15:04:05")
+
+	targetUrl := obsUrl + "/" + timeString + fileName
 	// fmt.Println("[+] target url: %v", targetUrl)
 
 	client := &http.Client{}
@@ -33,11 +35,13 @@ func UploadToObs(resJson []byte, obsUrl string, fileName string)(error){
 	return nil
 }
 
-func UploadToHostObs(resJson []byte, URL string, obsUrl string, fileName string)(error){
-    currentTime := time.Now()
-    timeString := currentTime.Format("2006-01-02 15:04:05")
+// UploadToHostObs
+// Deprecated: removed at v0.5.x, use upload.Obs() instead
+func UploadToHostObs(resJson []byte, URL string, obsUrl string, fileName string) error {
+	currentTime := time.Now()
+	timeString := currentTime.Format("2006-01-02 15:04:05")
 
-    url := URL+"/"+timeString+fileName
+	url := URL + "/" + timeString + fileName
 
 	client := &http.Client{}
 	request, err := http.NewRequest("PUT", url, bytes.NewBuffer(resJson))
@@ -57,5 +61,5 @@ func UploadToHostObs(resJson []byte, URL string, obsUrl string, fileName string)
 
 	// 输出响应
 	log.Println("POST Response Status:", postResponse.Status)
-    return nil
+	return nil
 }
