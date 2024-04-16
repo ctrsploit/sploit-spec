@@ -47,6 +47,7 @@ type Seccomp struct {
 
 type Namespace struct {
 	Levels map[string]NamespaceLevel `json:"levels"`
+	Names  []string                  `json:"-"`
 }
 
 type CgroupsVersion int
