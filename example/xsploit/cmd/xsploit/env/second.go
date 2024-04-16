@@ -1,11 +1,9 @@
 package env
 
 import (
-	"fmt"
 	"github.com/ctrsploit/sploit-spec/pkg/log"
-	"github.com/ctrsploit/sploit-spec/pkg/printer"
 	"github.com/urfave/cli/v2"
-	"xsploit/env"
+	"xsploit/env/second"
 )
 
 var Second = &cli.Command{
@@ -14,8 +12,7 @@ var Second = &cli.Command{
 	Usage:   "show the second info",
 	Action: func(context *cli.Context) (err error) {
 		log.Logger.Debug("")
-		result := env.Second()
-		fmt.Println(printer.Printer.Print(result))
+		second.Print()
 		return
 	},
 }

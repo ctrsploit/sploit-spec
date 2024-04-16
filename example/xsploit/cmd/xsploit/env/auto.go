@@ -2,7 +2,7 @@ package env
 
 import (
 	"github.com/urfave/cli/v2"
-	"xsploit/env"
+	"xsploit/env/auto"
 )
 
 const (
@@ -14,7 +14,7 @@ var (
 		Name:  CommandNameAuto,
 		Usage: "auto",
 		Action: func(context *cli.Context) (err error) {
-			env.Auto()
+			auto.Print()
 			return
 		},
 	}
