@@ -2,7 +2,7 @@
 
 | Basic          | Description                                            |
 |----------------|--------------------------------------------------------|
-| type           | runtime type, NotInContainer/K8s/Containerd/Docker/... |
+| where          | runtime type, NotInContainer/K8s/Containerd/Docker/... |
 | kernel-version |
 
 | Linux Security Feature | Feature     | Description                             |
@@ -25,5 +25,5 @@
 | ctr-cnt         | host container count  |
 
 | Helper | Description |
-| ---- | --- |
-| sudo | ... |
+|--------|-------------|
+| sudo   | ...         |
