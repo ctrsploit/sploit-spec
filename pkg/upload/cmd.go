@@ -9,7 +9,7 @@ func GenerateUploadCommand(env func() (json []byte, err error)) (cmd *cli.Comman
 	return &cli.Command{
 		Name:    "upload",
 		Aliases: []string{"up"},
-		Usage:   "upload <servicename> <filename> <obsurl> <obshost>",
+		Usage:   "upload <servicename> <filename> <obs> [host]",
 
 		Action: func(context *cli.Context) (err error) {
 			if context.NArg() < 3 {
