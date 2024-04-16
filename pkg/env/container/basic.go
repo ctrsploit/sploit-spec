@@ -1,15 +1,13 @@
 package container
 
-type ContainerType int
-
-const (
-	NotInContainer ContainerType = iota
-	K8s
-	Containerd
-	Docker
-)
+type Where struct {
+	NotInContainer bool
+	K8s            bool
+	Containerd     bool
+	Docker         bool
+}
 
 type Basic struct {
-	Type          ContainerType `json:"type"`
-	KernelVersion string        `json:"kernel_version"`
+	Where         Where  `json:"where"`
+	KernelVersion string `json:"kernel_version"`
 }

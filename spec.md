@@ -219,8 +219,10 @@ func (p *MustBe) Check() (err error) {
 
 The env list to be collected:
 
+* [app](./env-app.md)
 * [container](./env-container.md)
-* ...
+* [linux](./env-linux.md)
+* [virt](./env-virt.md)
 
 #### upload
 
