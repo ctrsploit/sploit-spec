@@ -8,7 +8,7 @@ import (
 )
 
 // UploadToObs
-// Deprecated: will removed at v0.5.x, use upload.Obs() instead
+// Deprecated: removed at v0.5.x, use upload.Obs() instead
 func UploadToObs(resJson []byte, obsUrl string, fileName string) error {
 
 	currentTime := time.Now()
@@ -35,6 +35,8 @@ func UploadToObs(resJson []byte, obsUrl string, fileName string) error {
 	return nil
 }
 
+// UploadToHostObs
+// Deprecated: removed at v0.5.x, use upload.Obs() instead
 func UploadToHostObs(resJson []byte, URL string, obsUrl string, fileName string) error {
 	currentTime := time.Now()
 	timeString := currentTime.Format("2006-01-02 15:04:05")
