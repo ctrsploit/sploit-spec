@@ -10,7 +10,11 @@ func GenerateUploadCommand(env func() (json []byte, err error)) (cmd *cli.Comman
 		Name:    "upload",
 		Aliases: []string{"up"},
 		Usage:   "upload <servicename> <filename> <obsurl> <obshost>",
+
 		Action: func(context *cli.Context) (err error) {
+			if context.NArg() < 3 {
+				return cli.Exit(fmt.Errorf("invalid arguments"), 1)
+			}
 			//eg. ECS
 			servicename := context.Args().Get(0)
 			// region_tag.json eg. cn-north4_linux.json

@@ -10,5 +10,6 @@ var Command = &cli.Command{
 		Auto,
 		Second,
 		Minute,
+		Upload,
 	},
 }

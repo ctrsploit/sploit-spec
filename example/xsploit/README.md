@@ -147,5 +147,5 @@ OPTIONS:
 
 ```
 ❯ ./bin/release/xsploit_linux_amd64 --json env auto
-{"minute":{"name":"minute","description":"second of current minute","result":"55"},"second":{"name":"second","description":"second of current time","result":"19"}}
+{"Minute":{"minute":39},"Second":{"second":55}}
 ```
