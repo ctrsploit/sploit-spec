@@ -10,8 +10,8 @@ func Vul2ChecksecCmd(v vul.Vulnerability, alias []string) *cli.Command {
 		Name:    v.GetName(),
 		Aliases: alias,
 		Usage:   v.GetDescription(),
-		Action: func(context *cli.Context) (err error) {
-			_, err = v.CheckSec()
+		Action: func(ctx *cli.Context) (err error) {
+			_, err = v.CheckSec(ctx)
 			if err != nil {
 				return
 			}
@@ -26,12 +26,13 @@ func Vul2ExploitCmd(v vul.Vulnerability, alias []string) *cli.Command {
 		Name:    v.GetName(),
 		Aliases: alias,
 		Usage:   v.GetDescription(),
-		Action: func(context *cli.Context) (err error) {
-			_, err = v.CheckSec()
+		Action: func(ctx *cli.Context) (err error) {
+			_, err = v.Exploit(ctx)
+			v.GetVulnerabilityExists()
 			if err != nil {
 				return
 			}
-			err = v.Exploit()
+			v.Output()
 			return
 		},
 	}
