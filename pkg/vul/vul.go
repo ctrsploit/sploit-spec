@@ -8,6 +8,7 @@ import (
 	"github.com/ctrsploit/sploit-spec/pkg/printer"
 	"github.com/ctrsploit/sploit-spec/pkg/result/item"
 	"github.com/ssst0n3/awesome_libs/awesome_error"
+	"github.com/urfave/cli/v2"
 )
 
 type Vulnerability interface {
@@ -16,21 +17,23 @@ type Vulnerability interface {
 	// GetDescription return usage
 	GetDescription() string
 	GetVulnerabilityExists() bool
+	GetVulnerabilityResponse() string
 	Info()
 	// CheckSec whether vulnerability exists
-	CheckSec() (bool, error)
+	CheckSec(ctx *cli.Context) (bool, error)
 	// Output shows checksec result
 	Output()
 	// Exploitable whether vulnerability can be exploited,
 	// will be called automatically before Exploit()
 	Exploitable() (bool, error)
-	Exploit() (err error)
+	Exploit(ctx *cli.Context) (bool, error)
 }
 
 type BaseVulnerability struct {
 	Name                     string                     `json:"name"`
 	Description              string                     `json:"description"`
 	VulnerabilityExists      bool                       `json:"vulnerability_exists"`
+	VulnerabilityResponse    string                     `json:"vulnerability_response"`
 	CheckSecHaveRan          bool                       `json:"-"`
 	CheckSecPrerequisites    prerequisite.Prerequisites `json:"-"`
 	ExploitablePrerequisites prerequisite.Prerequisites `json:"-"`
@@ -48,11 +51,15 @@ func (v *BaseVulnerability) GetVulnerabilityExists() bool {
 	return v.VulnerabilityExists
 }
 
+func (v *BaseVulnerability) GetVulnerabilityResponse() string {
+	return v.VulnerabilityResponse
+}
+
 func (v *BaseVulnerability) Info() {
 	log.Logger.Info(v.Description)
 }
 
-func (v *BaseVulnerability) CheckSec() (vulnerabilityExists bool, err error) {
+func (v *BaseVulnerability) CheckSec(ctx *cli.Context) (vulnerabilityExists bool, err error) {
 	vulnerabilityExists, err = v.CheckSecPrerequisites.Satisfied()
 	if err != nil {
 		return
@@ -63,10 +70,11 @@ func (v *BaseVulnerability) CheckSec() (vulnerabilityExists bool, err error) {
 }
 
 func (v *BaseVulnerability) Output() {
-	result := item.Bool{
+	result := item.Resp{
 		Name:        v.GetName(),
 		Description: v.GetDescription(),
 		Result:      v.GetVulnerabilityExists(),
+		Response:    v.GetVulnerabilityResponse(),
 	}
 	fmt.Println(printer.Printer.Print(result))
 }
@@ -84,7 +92,7 @@ func (v *BaseVulnerability) Exploitable() (satisfied bool, err error) {
 	return
 }
 
-func (v *BaseVulnerability) Exploit() (err error) {
+func (v *BaseVulnerability) Exploit(ctx *cli.Context) (vulnerabilityExists bool, err error) {
 	exploitable, err := v.Exploitable()
 	if err != nil {
 		return
