@@ -17,7 +17,7 @@ func (i Resp) IsEmpty() bool {
 }
 
 func (i Resp) Text() string {
-	tpl := `{.result}  {.name}	{.description}{.eol}{.result_title}{.eol}{.response}`
+	tpl := `{.result}  {.name}	{.description}{.eol}{.response_title}{.eol}{.response}`
 	return awesome_libs.Format(tpl, awesome_libs.Dict{
 		"result":         colorful.Bool(colorful.Text{}, i.Result),
 		"eol":            "\n",
@@ -30,7 +30,7 @@ func (i Resp) Text() string {
 
 func (i Resp) Colorful() string {
 	output := colorful.Colorful{}
-	tpl := `{.result}  {.name}	{.description}{.eol}{.result_title}{.eol}{.response}`
+	tpl := `{.result}  {.name}	{.description}{.eol}{.response_title}{.eol}{.response}`
 	return awesome_libs.Format(tpl, awesome_libs.Dict{
 		"result":         colorful.Bool(output, i.Result),
 		"eol":            "\n",
