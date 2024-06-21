@@ -1,8 +1,8 @@
 package container
 
 type LinuxSecurityFeature struct {
-	Credential `json:"credential"`
-	Capability `json:"capability"`
+	Credential   `json:"credential"`
+	Capabilities `json:"capability"`
 	LSM
 	Seccomp   `json:"seccomp"`
 	Namespace `json:"namespace"`
@@ -16,8 +16,13 @@ type Credential struct {
 }
 
 type Capability struct {
-	Pid1 uint64 `json:"pid1"`
-	Self uint64 `json:"self"`
+	Eff uint64 `json:"eff"`
+	Bnd uint64 `json:"bnd"`
+}
+
+type Capabilities struct {
+	Pid1 Capability `json:"pid1"`
+	Self Capability `json:"self"`
 }
 
 type LSM struct {
