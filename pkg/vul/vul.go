@@ -8,6 +8,7 @@ import (
 	"github.com/ctrsploit/sploit-spec/pkg/printer"
 	"github.com/ctrsploit/sploit-spec/pkg/result/item"
 	"github.com/ssst0n3/awesome_libs/awesome_error"
+	"github.com/urfave/cli/v2"
 )
 
 type Vulnerability interface {
@@ -24,7 +25,7 @@ type Vulnerability interface {
 	// Exploitable whether vulnerability can be exploited,
 	// will be called automatically before Exploit()
 	Exploitable() (bool, error)
-	Exploit() (err error)
+	Exploit(context *cli.Context) (err error)
 }
 
 type BaseVulnerability struct {
@@ -84,7 +85,7 @@ func (v *BaseVulnerability) Exploitable() (satisfied bool, err error) {
 	return
 }
 
-func (v *BaseVulnerability) Exploit() (err error) {
+func (v *BaseVulnerability) Exploit(context *cli.Context) (err error) {
 	exploitable, err := v.Exploitable()
 	if err != nil {
 		return

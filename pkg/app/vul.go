@@ -32,7 +32,7 @@ func Vul2ExploitCmd(v vul.Vulnerability, alias []string, flags []cli.Flag) *cli.
 			if err != nil {
 				return
 			}
-			err = v.Exploit()
+			err = v.Exploit(context)
 			return
 		},
 	}
