@@ -25,6 +25,7 @@ type Vulnerability interface {
 	// Exploitable whether vulnerability can be exploited,
 	// will be called automatically before Exploit()
 	Exploitable() (bool, error)
+	// Exploit : context can be used to parse flags
 	Exploit(context *cli.Context) (err error)
 }
 
