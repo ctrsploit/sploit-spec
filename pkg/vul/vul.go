@@ -18,8 +18,8 @@ type Vulnerability interface {
 	GetDescription() string
 	GetVulnerabilityExists() bool
 	Info()
-	// CheckSec whether vulnerability exists
-	CheckSec() (bool, error)
+	// CheckSec : check whether vulnerability exists; context can be used to parse flags
+	CheckSec(context *cli.Context) (bool, error)
 	// Output shows checksec result
 	Output()
 	// Exploitable whether vulnerability can be exploited,
@@ -54,7 +54,7 @@ func (v *BaseVulnerability) Info() {
 	log.Logger.Info(v.Description)
 }
 
-func (v *BaseVulnerability) CheckSec() (vulnerabilityExists bool, err error) {
+func (v *BaseVulnerability) CheckSec(context *cli.Context) (vulnerabilityExists bool, err error) {
 	vulnerabilityExists, err = v.CheckSecPrerequisites.Satisfied()
 	if err != nil {
 		return
