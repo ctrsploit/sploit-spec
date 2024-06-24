@@ -8,6 +8,7 @@ import (
 	"github.com/ctrsploit/sploit-spec/pkg/printer"
 	"github.com/ctrsploit/sploit-spec/pkg/result/item"
 	"github.com/ssst0n3/awesome_libs/awesome_error"
+	"github.com/urfave/cli/v2"
 )
 
 type Vulnerability interface {
@@ -17,14 +18,15 @@ type Vulnerability interface {
 	GetDescription() string
 	GetVulnerabilityExists() bool
 	Info()
-	// CheckSec whether vulnerability exists
-	CheckSec() (bool, error)
+	// CheckSec : check whether vulnerability exists; context can be used to parse flags
+	CheckSec(context *cli.Context) (bool, error)
 	// Output shows checksec result
 	Output()
 	// Exploitable whether vulnerability can be exploited,
 	// will be called automatically before Exploit()
 	Exploitable() (bool, error)
-	Exploit() (err error)
+	// Exploit : context can be used to parse flags
+	Exploit(context *cli.Context) (err error)
 }
 
 type BaseVulnerability struct {
@@ -52,7 +54,7 @@ func (v *BaseVulnerability) Info() {
 	log.Logger.Info(v.Description)
 }
 
-func (v *BaseVulnerability) CheckSec() (vulnerabilityExists bool, err error) {
+func (v *BaseVulnerability) CheckSec(context *cli.Context) (vulnerabilityExists bool, err error) {
 	vulnerabilityExists, err = v.CheckSecPrerequisites.Satisfied()
 	if err != nil {
 		return
@@ -84,7 +86,7 @@ func (v *BaseVulnerability) Exploitable() (satisfied bool, err error) {
 	return
 }
 
-func (v *BaseVulnerability) Exploit() (err error) {
+func (v *BaseVulnerability) Exploit(context *cli.Context) (err error) {
 	exploitable, err := v.Exploitable()
 	if err != nil {
 		return

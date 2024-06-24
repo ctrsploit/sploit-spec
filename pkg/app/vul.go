@@ -5,13 +5,13 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func Vul2ChecksecCmd(v vul.Vulnerability, alias []string) *cli.Command {
+func Vul2ChecksecCmd(v vul.Vulnerability, alias []string, flags []cli.Flag) *cli.Command {
 	return &cli.Command{
 		Name:    v.GetName(),
 		Aliases: alias,
 		Usage:   v.GetDescription(),
 		Action: func(context *cli.Context) (err error) {
-			_, err = v.CheckSec()
+			_, err = v.CheckSec(context)
 			if err != nil {
 				return
 			}
@@ -21,28 +21,29 @@ func Vul2ChecksecCmd(v vul.Vulnerability, alias []string) *cli.Command {
 	}
 }
 
-func Vul2ExploitCmd(v vul.Vulnerability, alias []string) *cli.Command {
+func Vul2ExploitCmd(v vul.Vulnerability, alias []string, flags []cli.Flag) *cli.Command {
 	return &cli.Command{
 		Name:    v.GetName(),
 		Aliases: alias,
 		Usage:   v.GetDescription(),
+		Flags:   flags,
 		Action: func(context *cli.Context) (err error) {
-			_, err = v.CheckSec()
+			_, err = v.CheckSec(context)
 			if err != nil {
 				return
 			}
-			err = v.Exploit()
+			err = v.Exploit(context)
 			return
 		},
 	}
 }
 
-func Vul2VulCmd(v vul.Vulnerability, alias []string) *cli.Command {
-	checksec := Vul2ChecksecCmd(v, []string{"c"})
+func Vul2VulCmd(v vul.Vulnerability, alias []string, flagsCheckSec []cli.Flag, flagsExploit []cli.Flag) *cli.Command {
+	checksec := Vul2ChecksecCmd(v, []string{"c"}, flagsCheckSec)
 	checksec.Name = "checksec"
 	checksec.Usage = "check vulnerability exists"
 
-	exploit := Vul2ExploitCmd(v, []string{"x"})
+	exploit := Vul2ExploitCmd(v, []string{"x"}, flagsExploit)
 	exploit.Name = "exploit"
 	exploit.Usage = "run exploit"
 	return &cli.Command{
