@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/fatih/color v1.15.0
+	github.com/moby/sys/mountinfo v0.7.1
 	github.com/sirupsen/logrus v1.7.0
 	github.com/ssst0n3/awesome_libs v0.6.7
 	github.com/stretchr/testify v1.4.0

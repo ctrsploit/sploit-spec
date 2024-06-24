@@ -1,5 +1,9 @@
 package container
 
+import (
+	"github.com/moby/sys/mountinfo"
+)
+
 type Type struct {
 	In    bool            `json:"in"`
 	Rules map[string]bool `json:"rules"`
@@ -13,6 +17,7 @@ type Where struct {
 }
 
 type Basic struct {
-	Where         Where  `json:"where"`
-	KernelVersion string `json:"kernel_version"`
+	Where         Where             `json:"where"`
+	KernelVersion string            `json:"kernel_version"`
+	MountInfo     []*mountinfo.Info `json:"mountinfo"`
 }
