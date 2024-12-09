@@ -11,11 +11,21 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+type Level int
+
+const (
+	LevelUndefined Level = iota
+	LevelLow
+	LevelMedium
+	LevelHigh
+)
+
 type Vulnerability interface {
 	// GetName returns a one word name; may be used as command name
 	GetName() string
 	// GetDescription return usage
 	GetDescription() string
+	GetLevel() Level
 	GetExeEnv() int
 	GetVulnerabilityExists() bool
 	Info()
@@ -31,8 +41,9 @@ type Vulnerability interface {
 }
 
 type BaseVulnerability struct {
-	Name                     string                     `json:"name"`
-	Description              string                     `json:"description"`
+	Name                     string `json:"name"`
+	Description              string `json:"description"`
+	Level                    Level
 	ExeEnv                   int                        `json:"exe_env"`
 	VulnerabilityExists      bool                       `json:"vulnerability_exists"`
 	CheckSecHaveRan          bool                       `json:"-"`
@@ -46,6 +57,10 @@ func (v *BaseVulnerability) GetName() string {
 
 func (v *BaseVulnerability) GetDescription() string {
 	return v.Description
+}
+
+func (v *BaseVulnerability) GetLevel() Level {
+	return v.Level
 }
 
 func (v *BaseVulnerability) GetExeEnv() int {
