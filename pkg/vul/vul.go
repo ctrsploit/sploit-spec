@@ -16,7 +16,7 @@ type Vulnerability interface {
 	GetName() string
 	// GetDescription return usage
 	GetDescription() string
-	GetExeEnv() ExeEnv
+	GetExeEnv() int
 	GetVulnerabilityExists() bool
 	Info()
 	// CheckSec : check whether vulnerability exists; context can be used to parse flags
@@ -33,7 +33,7 @@ type Vulnerability interface {
 type BaseVulnerability struct {
 	Name                     string                     `json:"name"`
 	Description              string                     `json:"description"`
-	ExeEnv                   ExeEnv                     `json:"exe_env"`
+	ExeEnv                   int                        `json:"exe_env"`
 	VulnerabilityExists      bool                       `json:"vulnerability_exists"`
 	CheckSecHaveRan          bool                       `json:"-"`
 	CheckSecPrerequisites    prerequisite.Prerequisites `json:"-"`
@@ -48,7 +48,7 @@ func (v *BaseVulnerability) GetDescription() string {
 	return v.Description
 }
 
-func (v *BaseVulnerability) GetExeEnv() ExeEnv {
+func (v *BaseVulnerability) GetExeEnv() int {
 	return v.ExeEnv
 }
 
