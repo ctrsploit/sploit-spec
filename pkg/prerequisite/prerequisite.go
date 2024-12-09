@@ -9,6 +9,7 @@ import (
 )
 
 type Interface interface {
+	GetExeEnv() int
 	Check() error
 	Output()
 	GetSatisfied() bool
@@ -36,8 +37,13 @@ func (ps Prerequisites) Satisfied() (satisfied bool, err error) {
 type BasePrerequisite struct {
 	Name      string
 	Info      string
+	ExeEnv    int
 	checked   bool
 	Satisfied bool
+}
+
+func (p *BasePrerequisite) GetExeEnv() int {
+	return p.ExeEnv
 }
 
 func (p *BasePrerequisite) GetSatisfied() bool {
