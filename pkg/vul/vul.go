@@ -2,6 +2,7 @@ package vul
 
 import (
 	"fmt"
+	"github.com/ctrsploit/sploit-spec/pkg/exeenv"
 	"github.com/ctrsploit/sploit-spec/pkg/log"
 	"github.com/ctrsploit/sploit-spec/pkg/prerequisite"
 	"github.com/ctrsploit/sploit-spec/pkg/prerequisite/vulnerability"
@@ -44,7 +45,7 @@ type BaseVulnerability struct {
 	Name                     string `json:"name"`
 	Description              string `json:"description"`
 	Level                    Level
-	ExeEnv                   int                        `json:"exe_env"`
+	ExeEnv                   exeenv.ExeEnv              `json:"exe_env"`
 	VulnerabilityExists      bool                       `json:"vulnerability_exists"`
 	CheckSecHaveRan          bool                       `json:"-"`
 	CheckSecPrerequisites    prerequisite.Prerequisites `json:"-"`
@@ -63,7 +64,7 @@ func (v *BaseVulnerability) GetLevel() Level {
 	return v.Level
 }
 
-func (v *BaseVulnerability) GetExeEnv() int {
+func (v *BaseVulnerability) GetExeEnv() exeenv.ExeEnv {
 	return v.ExeEnv
 }
 
