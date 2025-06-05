@@ -27,7 +27,7 @@ type Vulnerability interface {
 	// GetDescription return usage
 	GetDescription() string
 	GetLevel() Level
-	GetExeEnv() int
+	GetExeEnv() exeenv.ExeEnv
 	GetVulnerabilityExists() bool
 	Info()
 	// CheckSec : check whether vulnerability exists; context can be used to parse flags
