@@ -278,8 +278,10 @@ func buildSubcommandApp(info SubcommandInfo, outputDir string) (builtPath string
 
 func main() {
 	app := &cli.App{
-		Name:  "cmd2app",
-		Usage: "Generates separate, size-optimized executables for each subcommand of a given urfave/cli.Command",
+		Name: "cmd2app",
+		Usage: `Generates separate, size-optimized executables for each subcommand of a given urfave/cli.Command, e.g.: 
+cmd2app github.com/ctrsploit/ctrsploit/cmd/ctrsploit/vul.Command
+`,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "output-dir",
