@@ -13,6 +13,7 @@ version: v0.4.3
 | env          | e     | information collection                                   |
 | exploit      | x     | run a exploit                                            |
 | checksec     | c     | detect vulnerabilities                                   |
+| vul          | v     | list vulnerabilities                                     |
 | auto         | a     | auto gathering information, and detect vuls, and exploit |
 | version      | -     | show sploit tool's version                               |
 | spec-version | -     | show which spec does the sploit tool use                 |
@@ -265,6 +266,54 @@ xsploit env upload local cn-north7_linux.json http://xxx.com aaa.com
 ```
 
 ### 1.4 exploit command
+
+### 1.5 vul command
+
+```
+$ ./bin/latest/ctrsploit_linux_amd64 vul
+NAME:
+   ctrsploit vul - check security inside a container
+
+USAGE:
+   ctrsploit vul [command options]
+
+COMMANDS:
+   CVE-2025-47290, 47290, cve-2025-47290                           TOCTOU vulnerability in containerd that allows modification of the host filesystem during image pull.
+   help, h                                                         Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+```
+
+Vul2Command
+
+https://github.com/ctrsploit/sploit-spec/blob/main/pkg/app/vul.go
+
+```
+func Vul2VulCmd(v vul.Vulnerability, alias []string, flagsCheckSec []cli.Flag, flagsExploit []cli.Flag, checkBeforeExploit bool) *cli.Command {
+	checksec := Vul2ChecksecCmd(v, []string{"c"}, flagsCheckSec)
+	checksec.Name = "checksec"
+	checksec.Usage = "check vulnerability exists"
+
+	exploit := Vul2ExploitCmd(v, []string{"x"}, flagsExploit, checkBeforeExploit)
+	exploit.Name = "exploit"
+	exploit.Usage = "run exploit"
+	return &cli.Command{
+		Name:    v.GetName(),
+		Aliases: alias,
+		Usage:   v.GetDescription(),
+		Subcommands: []*cli.Command{
+			checksec,
+			exploit,
+		},
+	}
+}
+```
+
+e.g.:
+
+* https://github.com/ctrsploit/ctrsploit/blob/v0.9.0/vul/cve-2016-8867/vul.go#L14
+* https://github.com/ctrsploit/ctrsploit/blob/v0.9.0/vul/cve-2020-15257/vul.go#L19
 
 ## 2. suggested file structure
 
