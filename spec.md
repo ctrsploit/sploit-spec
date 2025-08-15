@@ -270,26 +270,26 @@ xsploit env upload local cn-north7_linux.json http://xxx.com aaa.com
 ### 1.5 vul command
 
 ```
-$ ./bin/latest/ctrsploit_linux_amd64 vul
+$ ./bin/release/xsploit_linux_amd64 vul
 NAME:
-   ctrsploit vul - check security inside a container
+   xsploit vul - list vulnerabilities
 
 USAGE:
-   ctrsploit vul [command options]
+   xsploit vul command [command options] 
 
 COMMANDS:
-   CVE-2025-47290, 47290, cve-2025-47290                           TOCTOU vulnerability in containerd that allows modification of the host filesystem during image pull.
-   help, h                                                         Shows a list of commands or help for one command
+   CVE-2099-9999, 2099  Description of CVE-2099-9999
+   help, h              Shows a list of commands or help for one command
 
 OPTIONS:
    --help, -h  show help
 
-$ ./bin/latest/ctrsploit_linux_amd64 vul 47290
+$ ./bin/release/xsploit_linux_amd64 vul 2099
 NAME:
-   ctrsploit vul CVE-2025-47290 - TOCTOU vulnerability in containerd that allows modification of the host filesystem during image pull.
+   xsploit vul CVE-2099-9999 - Description of CVE-2099-9999
 
 USAGE:
-   ctrsploit vul CVE-2025-47290 [command options]
+   xsploit vul CVE-2099-9999 command [command options] 
 
 COMMANDS:
    checksec, c  check vulnerability exists
@@ -327,6 +327,7 @@ func Vul2VulCmd(v vul.Vulnerability, alias []string, flagsCheckSec []cli.Flag, f
 
 e.g.:
 
+* https://github.com/ctrsploit/sploit-spec/blob/main/example/xsploit/cmd/xsploit/vul/vul.go
 * https://github.com/ctrsploit/ctrsploit/blob/v0.9.0/vul/cve-2016-8867/vul.go#L14
 * https://github.com/ctrsploit/ctrsploit/blob/v0.9.0/vul/cve-2020-15257/vul.go#L19
 
