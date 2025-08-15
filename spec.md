@@ -283,6 +283,21 @@ COMMANDS:
 
 OPTIONS:
    --help, -h  show help
+
+$ ./bin/latest/ctrsploit_linux_amd64 vul 47290
+NAME:
+   ctrsploit vul CVE-2025-47290 - TOCTOU vulnerability in containerd that allows modification of the host filesystem during image pull.
+
+USAGE:
+   ctrsploit vul CVE-2025-47290 [command options]
+
+COMMANDS:
+   checksec, c  check vulnerability exists
+   exploit, x   run exploit
+   help, h      Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
 ```
 
 Vul2Command
