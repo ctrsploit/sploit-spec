@@ -10,6 +10,7 @@ func Vul2ChecksecCmd(v vul.Vulnerability, alias []string, flags []cli.Flag) *cli
 		Name:    v.GetName(),
 		Aliases: alias,
 		Usage:   v.GetDescription(),
+		Flags:   flags,
 		Action: func(context *cli.Context) (err error) {
 			_, err = v.CheckSec(context)
 			if err != nil {
