@@ -1,7 +1,7 @@
 package prerequisite
 
 type Set interface {
-	GetSatisfied() (satisfied bool, err error)
+	Check() (satisfied bool, err error)
 }
 
 type SetAnd struct {
@@ -14,10 +14,10 @@ func And(sets ...Set) SetAnd {
 	}
 }
 
-func (s SetAnd) GetSatisfied() (satisfied bool, err error) {
+func (s SetAnd) Check() (satisfied bool, err error) {
 	satisfied = true
 	for _, set := range s.Sets {
-		r, err := set.GetSatisfied()
+		r, err := set.Check()
 		if err != nil {
 			return false, err
 		}
@@ -38,9 +38,9 @@ func Or(sets ...Set) SetOr {
 	}
 }
 
-func (s SetOr) GetSatisfied() (satisfied bool, err error) {
+func (s SetOr) Check() (satisfied bool, err error) {
 	for _, set := range s.Sets {
-		r, err := set.GetSatisfied()
+		r, err := set.Check()
 		if err != nil {
 			return false, err
 		}

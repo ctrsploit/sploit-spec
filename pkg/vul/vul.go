@@ -79,7 +79,7 @@ func (v *BaseVulnerability) Info() {
 
 func (v *BaseVulnerability) CheckSec(context *cli.Context) (vulnerabilityExists bool, err error) {
 	if v.CheckSecPrerequisites != nil {
-		vulnerabilityExists, err = v.CheckSecPrerequisites.GetSatisfied()
+		vulnerabilityExists, err = v.CheckSecPrerequisites.Check()
 	}
 	if err != nil {
 		return
@@ -104,7 +104,7 @@ func (v *BaseVulnerability) Exploitable() (satisfied bool, err error) {
 	}
 	prerequisiteVulnerabilityExists := vulnerability.Exists(v.VulnerabilityExists)
 	v.ExploitablePrerequisites = prerequisite.And(prerequisiteVulnerabilityExists, v.ExploitablePrerequisites)
-	satisfied, err = v.ExploitablePrerequisites.GetSatisfied()
+	satisfied, err = v.ExploitablePrerequisites.Check()
 	if err != nil {
 		return
 	}
