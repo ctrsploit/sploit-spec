@@ -1,10 +1,11 @@
 package user
 
 import (
-	"github.com/ctrsploit/sploit-spec/pkg/prerequisite"
-	"github.com/ssst0n3/awesome_libs/awesome_error"
 	"os/user"
 	"strconv"
+
+	"github.com/ctrsploit/sploit-spec/pkg/prerequisite"
+	"github.com/ssst0n3/awesome_libs/awesome_error"
 )
 
 type MustBe struct {

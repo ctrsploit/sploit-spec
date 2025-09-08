@@ -2,6 +2,7 @@ package vul
 
 import (
 	"fmt"
+
 	"github.com/ctrsploit/sploit-spec/pkg/exeenv"
 	"github.com/ctrsploit/sploit-spec/pkg/log"
 	"github.com/ctrsploit/sploit-spec/pkg/prerequisite"
@@ -45,11 +46,11 @@ type BaseVulnerability struct {
 	Name                     string `json:"name"`
 	Description              string `json:"description"`
 	Level                    Level
-	ExeEnv                   exeenv.ExeEnv              `json:"exe_env"`
-	VulnerabilityExists      bool                       `json:"vulnerability_exists"`
-	CheckSecHaveRan          bool                       `json:"-"`
-	CheckSecPrerequisites    prerequisite.Prerequisites `json:"-"`
-	ExploitablePrerequisites prerequisite.Prerequisites `json:"-"`
+	ExeEnv                   exeenv.ExeEnv    `json:"exe_env"`
+	VulnerabilityExists      bool             `json:"vulnerability_exists"`
+	CheckSecHaveRan          bool             `json:"-"`
+	CheckSecPrerequisites    prerequisite.Set `json:"-"`
+	ExploitablePrerequisites prerequisite.Set `json:"-"`
 }
 
 func (v *BaseVulnerability) GetName() string {
@@ -77,7 +78,9 @@ func (v *BaseVulnerability) Info() {
 }
 
 func (v *BaseVulnerability) CheckSec(context *cli.Context) (vulnerabilityExists bool, err error) {
-	vulnerabilityExists, err = v.CheckSecPrerequisites.Satisfied()
+	if v.CheckSecPrerequisites != nil {
+		vulnerabilityExists, err = v.CheckSecPrerequisites.GetSatisfied()
+	}
 	if err != nil {
 		return
 	}
@@ -100,8 +103,8 @@ func (v *BaseVulnerability) Exploitable() (satisfied bool, err error) {
 		panic(fmt.Errorf("CheckSecHaveRan = %+v", v.CheckSecHaveRan))
 	}
 	prerequisiteVulnerabilityExists := vulnerability.Exists(v.VulnerabilityExists)
-	v.ExploitablePrerequisites = append([]prerequisite.Interface{prerequisiteVulnerabilityExists}, v.ExploitablePrerequisites...)
-	satisfied, err = v.ExploitablePrerequisites.Satisfied()
+	v.ExploitablePrerequisites = prerequisite.And(prerequisiteVulnerabilityExists, v.ExploitablePrerequisites)
+	satisfied, err = v.ExploitablePrerequisites.GetSatisfied()
 	if err != nil {
 		return
 	}

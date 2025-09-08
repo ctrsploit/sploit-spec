@@ -1,8 +1,9 @@
 package prerequisite
 
 import (
-	"github.com/ctrsploit/sploit-spec/pkg/prerequisite"
 	"time"
+
+	"github.com/ctrsploit/sploit-spec/pkg/prerequisite"
 )
 
 type Time struct {
