@@ -2,6 +2,7 @@ package prerequisite
 
 import (
 	"fmt"
+
 	"github.com/ctrsploit/sploit-spec/pkg/log"
 	"github.com/ctrsploit/sploit-spec/pkg/printer"
 	"github.com/ctrsploit/sploit-spec/pkg/result"
@@ -12,26 +13,7 @@ type Interface interface {
 	GetExeEnv() int
 	Check() error
 	Output()
-	GetSatisfied() bool
-}
-type Prerequisites []Interface
-
-func (ps Prerequisites) Satisfied() (satisfied bool, err error) {
-	satisfied = true
-	for _, p := range ps {
-		err = p.Check()
-		if err != nil {
-			return
-		}
-		p.Output()
-		if err != nil {
-			return
-		}
-		if !p.GetSatisfied() {
-			satisfied = false
-		}
-	}
-	return
+	GetSatisfied() (bool, error)
 }
 
 type BasePrerequisite struct {
@@ -46,8 +28,14 @@ func (p *BasePrerequisite) GetExeEnv() int {
 	return p.ExeEnv
 }
 
-func (p *BasePrerequisite) GetSatisfied() bool {
-	return p.Satisfied
+func (p *BasePrerequisite) GetSatisfied() (bool, error) {
+	if !p.checked {
+		err := p.Check()
+		if err != nil {
+			return false, err
+		}
+	}
+	return p.Satisfied, nil
 }
 
 func (p *BasePrerequisite) Check() (err error) {
