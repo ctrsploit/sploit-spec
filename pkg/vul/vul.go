@@ -103,7 +103,11 @@ func (v *BaseVulnerability) Exploitable() (satisfied bool, err error) {
 		panic(fmt.Errorf("CheckSecHaveRan = %+v", v.CheckSecHaveRan))
 	}
 	prerequisiteVulnerabilityExists := vulnerability.Exists(v.VulnerabilityExists)
-	v.ExploitablePrerequisites = prerequisite.And(prerequisiteVulnerabilityExists, v.ExploitablePrerequisites)
+	if v.ExploitablePrerequisites == nil {
+		v.ExploitablePrerequisites = prerequisiteVulnerabilityExists
+	} else {
+		v.ExploitablePrerequisites = prerequisite.And(prerequisiteVulnerabilityExists, v.ExploitablePrerequisites)
+	}
 	satisfied, err = v.ExploitablePrerequisites.Check()
 	if err != nil {
 		return
