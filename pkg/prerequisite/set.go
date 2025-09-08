@@ -17,6 +17,9 @@ func And(sets ...Set) SetAnd {
 func (s SetAnd) Check() (satisfied bool, err error) {
 	satisfied = true
 	for _, set := range s.Sets {
+		if set == nil {
+			continue
+		}
 		r, err := set.Check()
 		if err != nil {
 			return false, err
@@ -40,6 +43,9 @@ func Or(sets ...Set) SetOr {
 
 func (s SetOr) Check() (satisfied bool, err error) {
 	for _, set := range s.Sets {
+		if set == nil {
+			continue
+		}
 		r, err := set.Check()
 		if err != nil {
 			return false, err
