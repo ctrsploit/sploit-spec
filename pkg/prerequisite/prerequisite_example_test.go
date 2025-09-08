@@ -15,7 +15,7 @@ func ExampleBasePrerequisite() {
 		Name: "CAP_SYS_ADMIN",
 		Info: "Container with cap_sys_admin is dangerous",
 	}
-	err := p.Check()
+	_, err := p.Check()
 	if err != nil {
 		awesome_error.CheckErr(err)
 		return

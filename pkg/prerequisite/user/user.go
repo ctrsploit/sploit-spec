@@ -30,10 +30,6 @@ var MustBeRootToWriteReleaseAgent = MustBe{
 }
 
 func (p *MustBe) Check() (err error) {
-	err = p.BasePrerequisite.Check()
-	if err != nil {
-		return
-	}
 	current, err := user.Current()
 	if err != nil {
 		awesome_error.CheckErr(err)

@@ -11,16 +11,15 @@ import (
 
 type Interface interface {
 	GetExeEnv() int
-	Check() error
 	Output()
-	GetSatisfied() (bool, error)
+	Check() (bool, error)
 }
 
 type BasePrerequisite struct {
 	Name      string
 	Info      string
 	ExeEnv    int
-	checked   bool
+	Checked   bool
 	Satisfied bool
 }
 
@@ -28,19 +27,8 @@ func (p *BasePrerequisite) GetExeEnv() int {
 	return p.ExeEnv
 }
 
-func (p *BasePrerequisite) GetSatisfied() (bool, error) {
-	if !p.checked {
-		err := p.Check()
-		if err != nil {
-			return false, err
-		}
-	}
-	return p.Satisfied, nil
-}
-
-func (p *BasePrerequisite) Check() (err error) {
-	p.checked = true
-	return
+func (p *BasePrerequisite) Check() (bool, error) {
+	return false, nil
 }
 
 type Result struct {
@@ -50,7 +38,7 @@ type Result struct {
 
 // Output print prerequisite with colorful; must be used after p.Check().
 func (p *BasePrerequisite) Output() {
-	if !p.checked {
+	if !p.Checked {
 		panic("prerequisite.Interface.Output() must be used after Check()")
 	}
 	r := Result{

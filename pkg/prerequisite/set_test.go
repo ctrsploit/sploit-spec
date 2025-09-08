@@ -13,7 +13,7 @@ type mockSet struct {
 }
 
 // GetSatisfied implements the Set interface, returning the preset satisfied and err values.
-func (m mockSet) GetSatisfied() (bool, error) {
+func (m mockSet) Check() (bool, error) {
 	return m.satisfied, m.err
 }
 
@@ -90,7 +90,7 @@ func TestSetAnd(t *testing.T) {
 	// Iterate through and execute all test cases
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			satisfied, err := tc.input.GetSatisfied()
+			satisfied, err := tc.input.Check()
 
 			// Check if the error matches the expectation
 			if tc.expectErr {
@@ -184,7 +184,7 @@ func TestSetOr(t *testing.T) {
 	// Iterate through and execute all test cases
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			satisfied, err := tc.input.GetSatisfied()
+			satisfied, err := tc.input.Check()
 
 			// Check if the error matches the expectation
 			if tc.expectErr {
