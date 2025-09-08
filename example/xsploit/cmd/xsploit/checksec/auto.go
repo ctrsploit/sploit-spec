@@ -1,9 +1,10 @@
 package checksec
 
 import (
+	"xsploit/vul/cve-2099-9999"
+
 	"github.com/ctrsploit/sploit-spec/pkg/vul"
 	"github.com/urfave/cli/v2"
-	vul2 "xsploit/vul"
 )
 
 const (
@@ -17,9 +18,9 @@ var (
 		Aliases: []string{"a"},
 		Action: func(context *cli.Context) (err error) {
 			vulnerabilities := vul.Vulnerabilities{
-				vul2.CVE_2099_9999_v1,
+				cve_2099_9999.Vul,
 			}
-			err = vulnerabilities.Check()
+			err = vulnerabilities.Check(context)
 			if err != nil {
 				return
 			}

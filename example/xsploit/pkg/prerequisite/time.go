@@ -21,11 +21,20 @@ var (
 	}
 )
 
-func (p *Time) Check() (err error) {
-	err = p.BasePrerequisite.Check()
-	if err != nil {
-		return
+func (p *Time) Check() (satisfied bool, err error) {
+	if !p.Checked {
+		p.Satisfied = time.Now().Second()%p.n == 0
+		p.Checked = true
 	}
-	p.Satisfied = time.Now().Second()%p.n == 0
+	satisfied = p.Satisfied
 	return
 }
+
+//func (p *Time) GetSatisfied() (bool, error) {
+//	err := p.BasePrerequisite.Check()
+//	if err != nil {
+//		return false, err
+//	}
+//	p.Satisfied = time.Now().Second()%p.n == 0
+//	return p.Satisfied, nil
+//}
