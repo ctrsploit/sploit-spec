@@ -75,3 +75,7 @@ var (
 	}
 	NamespaceMapType2Name = internal.ReverseMap(NamespaceMapName2Type).(map[NamespaceType]string)
 )
+
+func (l NamespaceType) String() string {
+	return NamespaceMapType2Name[l]
+}
