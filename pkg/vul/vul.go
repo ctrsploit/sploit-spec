@@ -116,6 +116,9 @@ func (v *BaseVulnerability) Exploitable() (satisfied bool, err error) {
 }
 
 func (v *BaseVulnerability) Exploit(context *cli.Context) (err error) {
+	if context.Bool("force") {
+		return
+	}
 	exploitable, err := v.Exploitable()
 	if err != nil {
 		return
