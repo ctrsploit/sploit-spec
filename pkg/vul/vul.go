@@ -80,6 +80,8 @@ func (v *BaseVulnerability) Info() {
 func (v *BaseVulnerability) CheckSec(context *cli.Context) (vulnerabilityExists bool, err error) {
 	if v.CheckSecPrerequisites != nil {
 		vulnerabilityExists, err = v.CheckSecPrerequisites.Check()
+	} else {
+		vulnerabilityExists = true
 	}
 	if err != nil {
 		return
