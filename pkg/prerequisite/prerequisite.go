@@ -54,3 +54,12 @@ func (p *BasePrerequisite) Output() {
 	log.Logger.Debugf("prerequisite\n%s\n", printer.Printer.Print(r))
 	return
 }
+
+func (p *BasePrerequisite) Range() <-chan Set {
+	ch := make(chan Set)
+	go func() {
+		defer close(ch)
+		ch <- p
+	}()
+	return ch
+}

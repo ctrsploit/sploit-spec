@@ -3,26 +3,38 @@ package prerequisite
 import (
 	"errors"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // mockSet is a mock implementation of the Set interface for testing purposes.
 // We can preset the boolean and error it returns when GetSatisfied is called.
 type mockSet struct {
-	satisfied bool
-	err       error
+	BasePrerequisite
+	err error
 }
 
 // GetSatisfied implements the Set interface, returning the preset satisfied and err values.
-func (m mockSet) Check() (bool, error) {
-	return m.satisfied, m.err
+func (m *mockSet) Check() (bool, error) {
+	return m.Satisfied, m.err
 }
 
 // TestSetAnd tests the And function and the GetSatisfied method of the SetAnd struct.
 func TestSetAnd(t *testing.T) {
 	// Define some reusable mockSet instances
-	trueSet := mockSet{satisfied: true}
-	falseSet := mockSet{satisfied: false}
-	errorSet := mockSet{err: errors.New("mock error")}
+	trueSet := &mockSet{
+		BasePrerequisite: BasePrerequisite{
+			Name:      "true-set",
+			Satisfied: true,
+		},
+	}
+	falseSet := &mockSet{
+		BasePrerequisite: BasePrerequisite{
+			Name:      "false-set",
+			Satisfied: false,
+		},
+	}
+	errorSet := &mockSet{err: errors.New("mock error")}
 
 	// Define the test case table
 	testCases := []struct {
@@ -114,9 +126,19 @@ func TestSetAnd(t *testing.T) {
 // TestSetOr tests the Or function and the GetSatisfied method of the SetOr struct.
 func TestSetOr(t *testing.T) {
 	// Define some reusable mockSet instances
-	trueSet := mockSet{satisfied: true}
-	falseSet := mockSet{satisfied: false}
-	errorSet := mockSet{err: errors.New("mock error")}
+	trueSet := &mockSet{
+		BasePrerequisite: BasePrerequisite{
+			Name:      "true-set",
+			Satisfied: true,
+		},
+	}
+	falseSet := &mockSet{
+		BasePrerequisite: BasePrerequisite{
+			Name:      "false-set",
+			Satisfied: false,
+		},
+	}
+	errorSet := &mockSet{err: errors.New("mock error")}
 
 	// Define the test case table
 	testCases := []struct {
@@ -202,5 +224,25 @@ func TestSetOr(t *testing.T) {
 				t.Errorf("expected satisfied to be %v, but got %v", tc.expectedSatis, satisfied)
 			}
 		})
+	}
+}
+
+func TestRange(t *testing.T) {
+	trueSet := &mockSet{
+		BasePrerequisite: BasePrerequisite{
+			Name:      "true-set",
+			Satisfied: true,
+		},
+	}
+	falseSet := &mockSet{
+		BasePrerequisite: BasePrerequisite{
+			Name:      "false-set",
+			Satisfied: false,
+		},
+	}
+	sets := And(trueSet, falseSet)
+	for set := range sets.Range() {
+		assert.True(t, set.(*BasePrerequisite).Name == "true-set" ||
+			set.(*BasePrerequisite).Name == "false-set")
 	}
 }

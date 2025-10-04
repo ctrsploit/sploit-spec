@@ -2,6 +2,7 @@ package prerequisite
 
 type Set interface {
 	Check() (satisfied bool, err error)
+	Range() <-chan Set
 }
 
 type SetAnd struct {
@@ -31,6 +32,22 @@ func (s SetAnd) Check() (satisfied bool, err error) {
 	return
 }
 
+func (s SetAnd) Range() <-chan Set {
+	ch := make(chan Set)
+	go func() {
+		defer close(ch)
+		for _, set := range s.Sets {
+			if set == nil {
+				continue
+			}
+			for leaf := range set.Range() {
+				ch <- leaf
+			}
+		}
+	}()
+	return ch
+}
+
 type SetOr struct {
 	Sets []Set
 }
@@ -55,4 +72,20 @@ func (s SetOr) Check() (satisfied bool, err error) {
 		}
 	}
 	return
+}
+
+func (s SetOr) Range() <-chan Set {
+	ch := make(chan Set)
+	go func() {
+		defer close(ch)
+		for _, set := range s.Sets {
+			if set == nil {
+				continue
+			}
+			for leaf := range set.Range() {
+				ch <- leaf
+			}
+		}
+	}()
+	return ch
 }
