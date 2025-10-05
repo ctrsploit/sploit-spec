@@ -14,6 +14,7 @@ type Where struct {
 	K8s        Type `json:"k8s"`
 	Containerd Type `json:"containerd"`
 	Docker     Type `json:"docker"`
+	Nerdctl    Type `json:"nerdctl"`
 }
 
 type Basic struct {
