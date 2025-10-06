@@ -1,5 +1,7 @@
 package container
 
+import "github.com/ctrsploit/sploit-spec/pkg/env/container/storagedriver"
+
 type LinuxSecurityFeature struct {
 	Credential   `json:"credential"`
 	Capabilities `json:"capability"`
@@ -70,5 +72,5 @@ type CGroups struct {
 }
 
 type Filesystem struct {
-	StorageDriver string `json:"storage_driver"`
+	StorageDriver storagedriver.StorageDriver `json:"storage_driver"`
 }
