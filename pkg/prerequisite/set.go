@@ -1,5 +1,7 @@
 package prerequisite
 
+import "github.com/ssst0n3/awesome_libs/awesome_error"
+
 type Set interface {
 	Check() (satisfied bool, err error)
 	Range() <-chan Set
@@ -23,7 +25,8 @@ func (s SetAnd) Check() (satisfied bool, err error) {
 		}
 		r, err := set.Check()
 		if err != nil {
-			return false, err
+			awesome_error.CheckWarning(err)
+			continue
 		}
 		if !r {
 			satisfied = false
@@ -65,7 +68,8 @@ func (s SetOr) Check() (satisfied bool, err error) {
 		}
 		r, err := set.Check()
 		if err != nil {
-			return false, err
+			awesome_error.CheckWarning(err)
+			continue
 		}
 		if r {
 			satisfied = true
