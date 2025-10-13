@@ -111,6 +111,7 @@ func (v *BaseVulnerability) Exploitable() (satisfied bool, err error) {
 		v.ExploitablePrerequisites = prerequisite.And(prerequisiteVulnerabilityExists, v.ExploitablePrerequisites)
 	}
 	satisfied, err = v.ExploitablePrerequisites.Check()
+	v.ExploitablePrerequisites.Output()
 	if err != nil {
 		return
 	}

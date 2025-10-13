@@ -1,10 +1,13 @@
 package prerequisite
 
-import "github.com/ssst0n3/awesome_libs/awesome_error"
+import (
+	"github.com/ssst0n3/awesome_libs/awesome_error"
+)
 
 type Set interface {
 	Check() (satisfied bool, err error)
 	Range() <-chan Set
+	Output()
 }
 
 type SetAnd struct {
@@ -51,6 +54,12 @@ func (s SetAnd) Range() <-chan Set {
 	return ch
 }
 
+func (s SetAnd) Output() {
+	for i := range s.Range() {
+		i.Output()
+	}
+}
+
 type SetOr struct {
 	Sets []Set
 }
@@ -92,4 +101,10 @@ func (s SetOr) Range() <-chan Set {
 		}
 	}()
 	return ch
+}
+
+func (s SetOr) Output() {
+	for i := range s.Range() {
+		i.Output()
+	}
 }
