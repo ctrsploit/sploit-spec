@@ -23,6 +23,10 @@ type BasePrerequisite struct {
 	Satisfied bool
 }
 
+func (p *BasePrerequisite) GetName() string {
+	return p.Name
+}
+
 func (p *BasePrerequisite) GetExeEnv() int {
 	return p.ExeEnv
 }
