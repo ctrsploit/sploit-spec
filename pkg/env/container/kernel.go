@@ -5,5 +5,14 @@ type Kernel struct {
 }
 
 type Sysctl struct {
-	ProcSysNetIpv4ConfAllRouteLocalNet bool `json:"route_localnet"`
+	Net
+	User
+}
+
+type Net struct {
+	RouteLocalNet bool `json:"net.ipv4.conf.all.route_localnet"`
+}
+
+type User struct {
+	MaxUserNamespaces int `json:"user.max_user_namespaces"`
 }
