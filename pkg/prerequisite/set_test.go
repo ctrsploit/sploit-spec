@@ -48,7 +48,7 @@ func TestSetNot(t *testing.T) {
 	t.Run("GetName", func(t *testing.T) {
 		mockA := &mockSet{name: "A"}
 		notA := Not(mockA)
-		expected := "(!A)"
+		expected := "!(A)"
 		if got := notA.GetName(); got != expected {
 			t.Errorf("Not.GetName() = %v, want %v", got, expected)
 		}
@@ -126,7 +126,7 @@ func TestSetAnd(t *testing.T) {
 		mockA := &mockSet{name: "A"}
 		mockB := &mockSet{name: "B"}
 		andSet := And(mockA, mockB)
-		expected := "(A && B)"
+		expected := "(A) && (B)"
 		if got := andSet.GetName(); got != expected {
 			t.Errorf("And.GetName() = %v, want %v", got, expected)
 		}
@@ -214,7 +214,7 @@ func TestSetOr(t *testing.T) {
 		mockA := &mockSet{name: "A"}
 		mockB := &mockSet{name: "B"}
 		orSet := Or(mockA, mockB)
-		expected := "(A || B)"
+		expected := "(A) || (B)"
 		if got := orSet.GetName(); got != expected {
 			t.Errorf("Or.GetName() = %v, want %v", got, expected)
 		}
@@ -312,7 +312,7 @@ func TestComplexNesting(t *testing.T) {
 
 	// Test GetName for the complex structure.
 	t.Run("GetName", func(t *testing.T) {
-		expectedName := "(!(A && (B || C)))"
+		expectedName := "!((A) && ((B) || (C)))"
 		if name := root.GetName(); name != expectedName {
 			t.Errorf("GetName() = %q, want %q", name, expectedName)
 		}

@@ -55,7 +55,7 @@ func (s *SetNot) Range() <-chan Set {
 }
 
 func (s *SetNot) GetName() string {
-	return fmt.Sprintf("(!%s)", s.Set.GetName())
+	return fmt.Sprintf("!(%s)", s.Set.GetName())
 }
 
 func (s *SetNot) Output() {
@@ -126,9 +126,9 @@ func (s *SetAnd) Range() <-chan Set {
 func (s *SetAnd) GetName() string {
 	var names []string
 	for _, set := range s.Sets {
-		names = append(names, set.GetName())
+		names = append(names, fmt.Sprintf("(%s)", set.GetName()))
 	}
-	return fmt.Sprintf("(%s)", strings.Join(names, " && "))
+	return strings.Join(names, " && ")
 }
 
 func (s *SetAnd) Output() {
@@ -201,9 +201,9 @@ func (s *SetOr) Range() <-chan Set {
 func (s *SetOr) GetName() string {
 	var names []string
 	for _, set := range s.Sets {
-		names = append(names, set.GetName())
+		names = append(names, fmt.Sprintf("(%s)", set.GetName()))
 	}
-	return fmt.Sprintf("(%s)", strings.Join(names, " || "))
+	return strings.Join(names, " || ")
 }
 
 func (s *SetOr) Output() {
