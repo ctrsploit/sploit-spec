@@ -7,6 +7,7 @@ type Kernel struct {
 type Sysctl struct {
 	Net
 	User
+	KernelSysctl
 }
 
 type Net struct {
@@ -15,4 +16,8 @@ type Net struct {
 
 type User struct {
 	MaxUserNamespaces int `json:"user.max_user_namespaces"`
+}
+
+type KernelSysctl struct {
+	UnprivilegedUsernsClone bool `json:"kernel.unprivileged_userns_clone"`
 }
