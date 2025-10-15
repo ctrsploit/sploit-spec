@@ -21,6 +21,7 @@ type BasePrerequisite struct {
 	ExeEnv    int
 	Checked   bool
 	Satisfied bool
+	Err       error
 }
 
 func (p *BasePrerequisite) GetName() string {
@@ -32,7 +33,7 @@ func (p *BasePrerequisite) GetExeEnv() int {
 }
 
 func (p *BasePrerequisite) Check() (bool, error) {
-	return false, nil
+	return p.Satisfied, p.Err
 }
 
 type Result struct {
