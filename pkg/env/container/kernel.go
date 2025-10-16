@@ -8,7 +8,8 @@ type Kernel struct {
 }
 
 type KernelBasic struct {
-	CompiledDate time.Time `json:"compiled_date"`
+	CompiledDate  time.Time `json:"compiled_date"`
+	KernelVersion string    `json:"kernel_version"`
 }
 
 type Sysctl struct {

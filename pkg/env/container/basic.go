@@ -18,7 +18,6 @@ type Where struct {
 }
 
 type Basic struct {
-	Where         Where             `json:"where"`
-	KernelVersion string            `json:"kernel_version"`
-	MountInfo     []*mountinfo.Info `json:"mountinfo"`
+	Where     Where             `json:"where"`
+	MountInfo []*mountinfo.Info `json:"mountinfo"`
 }
