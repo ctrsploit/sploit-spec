@@ -32,6 +32,10 @@ func (p *BasePrerequisite) GetExeEnv() int {
 	return p.ExeEnv
 }
 
+func (p *BasePrerequisite) GetChecked() bool {
+	return p.Checked
+}
+
 func (p *BasePrerequisite) Check() (bool, error) {
 	return p.Satisfied, p.Err
 }

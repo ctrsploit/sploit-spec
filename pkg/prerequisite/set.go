@@ -13,6 +13,7 @@ import (
 )
 
 type Set interface {
+	GetChecked() bool
 	Check() (satisfied bool, err error)
 	Range() <-chan Set
 	GetName() string
@@ -30,6 +31,10 @@ func Not(set Set) *SetNot {
 	return &SetNot{
 		Set: set,
 	}
+}
+
+func (s *SetNot) GetChecked() bool {
+	return s.checked
 }
 
 func (s *SetNot) Check() (bool, error) {
@@ -83,6 +88,10 @@ func And(sets ...Set) *SetAnd {
 	return &SetAnd{
 		Sets: sets,
 	}
+}
+
+func (s *SetAnd) GetChecked() bool {
+	return s.checked
 }
 
 func (s *SetAnd) Check() (bool, error) {
@@ -162,6 +171,10 @@ func Or(sets ...Set) *SetOr {
 	return &SetOr{
 		Sets: sets,
 	}
+}
+
+func (s *SetOr) GetChecked() bool {
+	return s.checked
 }
 
 func (s *SetOr) Check() (bool, error) {
