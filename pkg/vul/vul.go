@@ -2,6 +2,8 @@ package vul
 
 import (
 	"fmt"
+
+	"github.com/ctrsploit/sploit-spec/pkg/exeenv"
 	"github.com/ctrsploit/sploit-spec/pkg/log"
 	"github.com/ctrsploit/sploit-spec/pkg/prerequisite"
 	"github.com/ctrsploit/sploit-spec/pkg/prerequisite/vulnerability"
@@ -11,32 +13,46 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+type Level int
+
+const (
+	LevelUndefined Level = iota
+	LevelLow
+	LevelMedium
+	LevelHigh
+)
+
 type Vulnerability interface {
 	// GetName returns a one word name; may be used as command name
 	GetName() string
 	// GetDescription return usage
 	GetDescription() string
+	GetLevel() Level
+	GetExeEnv() exeenv.ExeEnv
 	GetVulnerabilityExists() bool
 	GetVulnerabilityResponse() string
 	Info()
-	// CheckSec whether vulnerability exists
-	CheckSec(ctx *cli.Context) (bool, error)
+	// CheckSec : check whether vulnerability exists; context can be used to parse flags
+	CheckSec(context *cli.Context) (bool, error)
 	// Output shows checksec result
 	Output()
 	// Exploitable whether vulnerability can be exploited,
 	// will be called automatically before Exploit()
 	Exploitable() (bool, error)
-	Exploit(ctx *cli.Context) (bool, error)
+	// Exploit : context can be used to parse flags
+	Exploit(context *cli.Context) (err error)
 }
 
 type BaseVulnerability struct {
-	Name                     string                     `json:"name"`
-	Description              string                     `json:"description"`
-	VulnerabilityExists      bool                       `json:"vulnerability_exists"`
-	VulnerabilityResponse    string                     `json:"vulnerability_response"`
-	CheckSecHaveRan          bool                       `json:"-"`
-	CheckSecPrerequisites    prerequisite.Prerequisites `json:"-"`
-	ExploitablePrerequisites prerequisite.Prerequisites `json:"-"`
+	Name                     string `json:"name"`
+	Description              string `json:"description"`
+	Level                    Level
+	ExeEnv                   exeenv.ExeEnv    `json:"exe_env"`
+	VulnerabilityExists      bool             `json:"vulnerability_exists"`
+	VulnerabilityResponse    string           `json:"vulnerability_response"`
+	CheckSecHaveRan          bool             `json:"-"`
+	CheckSecPrerequisites    prerequisite.Set `json:"-"`
+	ExploitablePrerequisites prerequisite.Set `json:"-"`
 }
 
 func (v *BaseVulnerability) GetName() string {
@@ -45,6 +61,14 @@ func (v *BaseVulnerability) GetName() string {
 
 func (v *BaseVulnerability) GetDescription() string {
 	return v.Description
+}
+
+func (v *BaseVulnerability) GetLevel() Level {
+	return v.Level
+}
+
+func (v *BaseVulnerability) GetExeEnv() exeenv.ExeEnv {
+	return v.ExeEnv
 }
 
 func (v *BaseVulnerability) GetVulnerabilityExists() bool {
@@ -59,8 +83,12 @@ func (v *BaseVulnerability) Info() {
 	log.Logger.Info(v.Description)
 }
 
-func (v *BaseVulnerability) CheckSec(ctx *cli.Context) (vulnerabilityExists bool, err error) {
-	vulnerabilityExists, err = v.CheckSecPrerequisites.Satisfied()
+func (v *BaseVulnerability) CheckSec(context *cli.Context) (vulnerabilityExists bool, err error) {
+	if v.CheckSecPrerequisites != nil {
+		vulnerabilityExists, err = v.CheckSecPrerequisites.Check()
+	} else {
+		vulnerabilityExists = true
+	}
 	if err != nil {
 		return
 	}
@@ -70,6 +98,15 @@ func (v *BaseVulnerability) CheckSec(ctx *cli.Context) (vulnerabilityExists bool
 }
 
 func (v *BaseVulnerability) Output() {
+	result := item.Bool{
+		Name:        v.GetName(),
+		Description: v.GetDescription(),
+		Result:      v.GetVulnerabilityExists(),
+	}
+	fmt.Println(printer.Printer.Print(result))
+}
+
+func (v *BaseVulnerability) OutputResp() {
 	result := item.Resp{
 		Name:        v.GetName(),
 		Description: v.GetDescription(),
@@ -84,15 +121,23 @@ func (v *BaseVulnerability) Exploitable() (satisfied bool, err error) {
 		panic(fmt.Errorf("CheckSecHaveRan = %+v", v.CheckSecHaveRan))
 	}
 	prerequisiteVulnerabilityExists := vulnerability.Exists(v.VulnerabilityExists)
-	v.ExploitablePrerequisites = append([]prerequisite.Interface{prerequisiteVulnerabilityExists}, v.ExploitablePrerequisites...)
-	satisfied, err = v.ExploitablePrerequisites.Satisfied()
+	if v.ExploitablePrerequisites == nil {
+		v.ExploitablePrerequisites = prerequisiteVulnerabilityExists
+	} else {
+		v.ExploitablePrerequisites = prerequisite.And(prerequisiteVulnerabilityExists, v.ExploitablePrerequisites)
+	}
+	satisfied, err = v.ExploitablePrerequisites.Check()
+	v.ExploitablePrerequisites.Output()
 	if err != nil {
 		return
 	}
 	return
 }
 
-func (v *BaseVulnerability) Exploit(ctx *cli.Context) (vulnerabilityExists bool, err error) {
+func (v *BaseVulnerability) Exploit(context *cli.Context) (err error) {
+	if context.Bool("force") {
+		return
+	}
 	exploitable, err := v.Exploitable()
 	if err != nil {
 		return

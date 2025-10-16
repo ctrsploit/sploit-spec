@@ -1,8 +1,10 @@
 package container
 
+import "github.com/ctrsploit/sploit-spec/pkg/env/container/storagedriver"
+
 type LinuxSecurityFeature struct {
-	Credential `json:"credential"`
-	Capability `json:"capability"`
+	Credential   `json:"credential"`
+	Capabilities `json:"capability"`
 	LSM
 	Seccomp   `json:"seccomp"`
 	Namespace `json:"namespace"`
@@ -16,8 +18,13 @@ type Credential struct {
 }
 
 type Capability struct {
-	Pid1 uint64 `json:"pid1"`
-	Self uint64 `json:"self"`
+	Eff uint64 `json:"eff"`
+	Bnd uint64 `json:"bnd"`
+}
+
+type Capabilities struct {
+	Pid1 Capability `json:"pid1"`
+	Self Capability `json:"self"`
 }
 
 type LSM struct {
@@ -65,13 +72,5 @@ type CGroups struct {
 }
 
 type Filesystem struct {
-	Overlay      GraphDriver `json:"overlay"`
-	DeviceMapper GraphDriver `json:"device_mapper"`
-}
-
-type GraphDriver struct {
-	Loaded   bool   `json:"loaded"`
-	Used     bool   `json:"used"`
-	Refcnt   int    `json:"refcnt"`
-	HostPath string `json:"hostPath"`
+	StorageDriver storagedriver.StorageDriver `json:"storage_driver"`
 }

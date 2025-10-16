@@ -1,10 +1,11 @@
 package user
 
 import (
-	"github.com/ctrsploit/sploit-spec/pkg/prerequisite"
-	"github.com/ssst0n3/awesome_libs/awesome_error"
 	"os/user"
 	"strconv"
+
+	"github.com/ctrsploit/sploit-spec/pkg/prerequisite"
+	"github.com/ssst0n3/awesome_libs/awesome_error"
 )
 
 type MustBe struct {
@@ -28,21 +29,21 @@ var MustBeRootToWriteReleaseAgent = MustBe{
 	},
 }
 
-func (p *MustBe) Check() (err error) {
-	err = p.BasePrerequisite.Check()
-	if err != nil {
-		return
+func (p *MustBe) Check() (satisfied bool, err error) {
+	if !p.Checked {
+		current, err := user.Current()
+		if err != nil {
+			awesome_error.CheckErr(err)
+			return false, err
+		}
+		u, err := strconv.Atoi(current.Uid)
+		if err != nil {
+			awesome_error.CheckErr(err)
+			return false, err
+		}
+		p.Satisfied = uint(u) == p.ExpectedUser
+		p.Checked = true
 	}
-	current, err := user.Current()
-	if err != nil {
-		awesome_error.CheckErr(err)
-		return
-	}
-	u, err := strconv.Atoi(current.Uid)
-	if err != nil {
-		awesome_error.CheckErr(err)
-		return
-	}
-	p.Satisfied = uint(u) == p.ExpectedUser
+	satisfied = p.Satisfied
 	return
 }

@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/ctrsploit/sploit-spec/pkg/app"
-	"github.com/ssst0n3/awesome_libs/awesome_error"
 	"os"
 	"xsploit/cmd/xsploit/checksec"
+
+	"github.com/ctrsploit/sploit-spec/pkg/app"
+	"github.com/ssst0n3/awesome_libs/awesome_error"
 )
 
 const (

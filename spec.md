@@ -1,6 +1,6 @@
 ---
 
-version: v0.4.3
+version: v0.5.2
 
 ---
 
@@ -13,6 +13,7 @@ version: v0.4.3
 | env          | e     | information collection                                   |
 | exploit      | x     | run a exploit                                            |
 | checksec     | c     | detect vulnerabilities                                   |
+| vul          | v     | list vulnerabilities                                     |
 | auto         | a     | auto gathering information, and detect vuls, and exploit |
 | version      | -     | show sploit tool's version                               |
 | spec-version | -     | show which spec does the sploit tool use                 |
@@ -265,6 +266,70 @@ xsploit env upload local cn-north7_linux.json http://xxx.com aaa.com
 ```
 
 ### 1.4 exploit command
+
+### 1.5 vul command
+
+```
+$ ./bin/release/xsploit_linux_amd64 vul
+NAME:
+   xsploit vul - list vulnerabilities
+
+USAGE:
+   xsploit vul command [command options] 
+
+COMMANDS:
+   CVE-2099-9999, 2099  Description of CVE-2099-9999
+   help, h              Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+
+$ ./bin/release/xsploit_linux_amd64 vul 2099
+NAME:
+   xsploit vul CVE-2099-9999 - Description of CVE-2099-9999
+
+USAGE:
+   xsploit vul CVE-2099-9999 command [command options] 
+
+COMMANDS:
+   checksec, c  check vulnerability exists
+   exploit, x   run exploit
+   help, h      Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+```
+
+Vul2Command
+
+https://github.com/ctrsploit/sploit-spec/blob/main/pkg/app/vul.go
+
+```
+func Vul2VulCmd(v vul.Vulnerability, alias []string, flagsCheckSec []cli.Flag, flagsExploit []cli.Flag, checkBeforeExploit bool) *cli.Command {
+	checksec := Vul2ChecksecCmd(v, []string{"c"}, flagsCheckSec)
+	checksec.Name = "checksec"
+	checksec.Usage = "check vulnerability exists"
+
+	exploit := Vul2ExploitCmd(v, []string{"x"}, flagsExploit, checkBeforeExploit)
+	exploit.Name = "exploit"
+	exploit.Usage = "run exploit"
+	return &cli.Command{
+		Name:    v.GetName(),
+		Aliases: alias,
+		Usage:   v.GetDescription(),
+		Subcommands: []*cli.Command{
+			checksec,
+			exploit,
+		},
+	}
+}
+```
+
+e.g.:
+
+* https://github.com/ctrsploit/sploit-spec/blob/main/example/xsploit/cmd/xsploit/vul/vul.go
+* https://github.com/ctrsploit/ctrsploit/blob/v0.9.0/vul/cve-2016-8867/vul.go#L14
+* https://github.com/ctrsploit/ctrsploit/blob/v0.9.0/vul/cve-2020-15257/vul.go#L19
 
 ## 2. suggested file structure
 

@@ -2,6 +2,7 @@ package prerequisite
 
 import (
 	"fmt"
+
 	"github.com/ctrsploit/sploit-spec/pkg/log"
 	"github.com/ctrsploit/sploit-spec/pkg/printer"
 	"github.com/ctrsploit/sploit-spec/pkg/result"
@@ -9,44 +10,30 @@ import (
 )
 
 type Interface interface {
-	Check() error
+	GetExeEnv() int
 	Output()
-	GetSatisfied() bool
-}
-type Prerequisites []Interface
-
-func (ps Prerequisites) Satisfied() (satisfied bool, err error) {
-	satisfied = true
-	for _, p := range ps {
-		err = p.Check()
-		if err != nil {
-			return
-		}
-		p.Output()
-		if err != nil {
-			return
-		}
-		if !p.GetSatisfied() {
-			satisfied = false
-		}
-	}
-	return
+	Check() (bool, error)
 }
 
 type BasePrerequisite struct {
 	Name      string
 	Info      string
-	checked   bool
+	ExeEnv    int
+	Checked   bool
 	Satisfied bool
+	Err       error
 }
 
-func (p *BasePrerequisite) GetSatisfied() bool {
-	return p.Satisfied
+func (p *BasePrerequisite) GetName() string {
+	return p.Name
 }
 
-func (p *BasePrerequisite) Check() (err error) {
-	p.checked = true
-	return
+func (p *BasePrerequisite) GetExeEnv() int {
+	return p.ExeEnv
+}
+
+func (p *BasePrerequisite) Check() (bool, error) {
+	return p.Satisfied, p.Err
 }
 
 type Result struct {
@@ -56,7 +43,7 @@ type Result struct {
 
 // Output print prerequisite with colorful; must be used after p.Check().
 func (p *BasePrerequisite) Output() {
-	if !p.checked {
+	if !p.Checked {
 		panic("prerequisite.Interface.Output() must be used after Check()")
 	}
 	r := Result{
@@ -71,4 +58,13 @@ func (p *BasePrerequisite) Output() {
 	}
 	log.Logger.Debugf("prerequisite\n%s\n", printer.Printer.Print(r))
 	return
+}
+
+func (p *BasePrerequisite) Range() <-chan Set {
+	ch := make(chan Set)
+	go func() {
+		defer close(ch)
+		ch <- p
+	}()
+	return ch
 }
