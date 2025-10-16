@@ -209,7 +209,7 @@ func parseSubcommandsFromSource(pkgPath, varName string) ([]SubcommandInfo, erro
 
 // buildSubcommandApp creates a temporary Go project, generates a main.go,
 // and builds the final executable for a single subcommand.
-func buildSubcommandApp(info SubcommandInfo, outputDir string) (builtPath string, err error) {
+func buildSubcommandApp(info SubcommandInfo, outputDir, sourceModulePath string) (builtPath string, err error) {
 	tempDir, err := os.MkdirTemp("", "cmd2app-builder-*")
 	if err != nil {
 		err = fmt.Errorf("failed to create build directory: %w", err)
@@ -259,6 +259,17 @@ func buildSubcommandApp(info SubcommandInfo, outputDir string) (builtPath string
 		err = fmt.Errorf("failed to initialize Go module: %w", e)
 		return
 	}
+
+	// Extract the root module name from the package path
+	rootModule := strings.Split(info.PkgPath, "/")[0]
+
+	// Add a replace directive to point to the local source module
+	if e := runCmdInDir(tempDir, "go", "mod", "edit", "-replace", fmt.Sprintf("%s=%s", rootModule, sourceModulePath)); e != nil {
+		err = fmt.Errorf("failed to add replace directive: %w", e)
+		return
+	}
+	fmt.Printf("\t- Added replace directive: %s => %s\n", rootModule, sourceModulePath)
+
 	if e := runCmdInDir(tempDir, "go", "mod", "tidy"); e != nil {
 		err = fmt.Errorf("failed to tidy Go module: %w", e)
 		return
@@ -304,8 +315,22 @@ cmd2app github.com/ctrsploit/ctrsploit/cmd/ctrsploit/vul.Command
 
 			outputDir := c.String("output-dir")
 
+			// Get the directory of the source package to use as the module path for replace directive
+			cmd := exec.Command("go", "list", "-f", "{{.Module.Dir}}", pkgPath)
+			var stdout, stderr bytes.Buffer
+			cmd.Stdout = &stdout
+			cmd.Stderr = &stderr
+			if err := cmd.Run(); err != nil {
+				return cli.Exit(fmt.Sprintf("Error: failed to get module directory for package '%s': %v\n%s", pkgPath, err, stderr.String()), 1)
+			}
+			sourceModulePath := strings.TrimSpace(stdout.String())
+			if sourceModulePath == "" {
+				return cli.Exit(fmt.Sprintf("Error: could not determine module directory for package '%s'", pkgPath), 1)
+			}
+
 			fmt.Printf("▶️  Target Package: %s\n", pkgPath)
 			fmt.Printf("▶️  Target Variable: %s\n", varName)
+			fmt.Printf("▶️  Source Module Path: %s\n", sourceModulePath)
 			fmt.Printf("▶️  Output Directory: %s\n", outputDir)
 
 			if err := os.MkdirAll(outputDir, 0755); err != nil {
@@ -326,7 +351,7 @@ cmd2app github.com/ctrsploit/ctrsploit/cmd/ctrsploit/vul.Command
 
 			for _, subCmd := range subcommands {
 				fmt.Printf("\n🔨 Building subcommand: %s (from %s)\n", subCmd.Name, subCmd.PkgPath)
-				builtPath, err := buildSubcommandApp(subCmd, outputDir)
+				builtPath, err := buildSubcommandApp(subCmd, outputDir, sourceModulePath)
 				if err != nil {
 					log.Printf("❌ Build failed for '%s': %v", subCmd.Name, err)
 					continue
