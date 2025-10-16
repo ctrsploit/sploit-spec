@@ -126,6 +126,9 @@ func (s *SetAnd) Range() <-chan Set {
 func (s *SetAnd) GetName() string {
 	var names []string
 	for _, set := range s.Sets {
+		if set == nil {
+			continue
+		}
 		names = append(names, fmt.Sprintf("(%s)", set.GetName()))
 	}
 	return strings.Join(names, " && ")
@@ -201,6 +204,9 @@ func (s *SetOr) Range() <-chan Set {
 func (s *SetOr) GetName() string {
 	var names []string
 	for _, set := range s.Sets {
+		if set == nil {
+			continue
+		}
 		names = append(names, fmt.Sprintf("(%s)", set.GetName()))
 	}
 	return strings.Join(names, " || ")
