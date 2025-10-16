@@ -1,7 +1,14 @@
 package container
 
+import "time"
+
 type Kernel struct {
+	KernelBasic
 	Sysctl `json:"sysctl"`
+}
+
+type KernelBasic struct {
+	CompiledDate time.Time `json:"compiled_date"`
 }
 
 type Sysctl struct {
