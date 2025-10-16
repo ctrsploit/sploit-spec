@@ -30,6 +30,7 @@ type Vulnerability interface {
 	GetLevel() Level
 	GetExeEnv() exeenv.ExeEnv
 	GetVulnerabilityExists() bool
+	GetVulnerabilityResponse() string
 	Info()
 	// CheckSec : check whether vulnerability exists; context can be used to parse flags
 	CheckSec(context *cli.Context) (bool, error)
@@ -48,6 +49,7 @@ type BaseVulnerability struct {
 	Level                    Level
 	ExeEnv                   exeenv.ExeEnv    `json:"exe_env"`
 	VulnerabilityExists      bool             `json:"vulnerability_exists"`
+	VulnerabilityResponse    string           `json:"vulnerability_response"`
 	CheckSecHaveRan          bool             `json:"-"`
 	CheckSecPrerequisites    prerequisite.Set `json:"-"`
 	ExploitablePrerequisites prerequisite.Set `json:"-"`
@@ -73,6 +75,10 @@ func (v *BaseVulnerability) GetVulnerabilityExists() bool {
 	return v.VulnerabilityExists
 }
 
+func (v *BaseVulnerability) GetVulnerabilityResponse() string {
+	return v.VulnerabilityResponse
+}
+
 func (v *BaseVulnerability) Info() {
 	log.Logger.Info(v.Description)
 }
@@ -96,6 +102,16 @@ func (v *BaseVulnerability) Output() {
 		Name:        v.GetName(),
 		Description: v.GetDescription(),
 		Result:      v.GetVulnerabilityExists(),
+	}
+	fmt.Println(printer.Printer.Print(result))
+}
+
+func (v *BaseVulnerability) OutputResp() {
+	result := item.Resp{
+		Name:        v.GetName(),
+		Description: v.GetDescription(),
+		Result:      v.GetVulnerabilityExists(),
+		Response:    v.GetVulnerabilityResponse(),
 	}
 	fmt.Println(printer.Printer.Print(result))
 }
