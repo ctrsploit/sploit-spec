@@ -97,7 +97,7 @@ func (s *SetAnd) Check() (bool, error) {
 		}
 		r, err := set.Check()
 		if err != nil {
-			awesome_error.CheckWarning(err)
+			awesome_error.CheckWarning(fmt.Errorf("[PREREQUISITE %s]:[%s] %w", s.GetName(), set.GetName(), err))
 			s.err = errors.Join(s.err, err)
 			// Removed 'continue' here to allow boolean evaluation below.
 			// continue
@@ -172,7 +172,7 @@ func (s *SetOr) Check() (bool, error) {
 		}
 		r, err := set.Check()
 		if err != nil {
-			awesome_error.CheckWarning(err)
+			awesome_error.CheckWarning(fmt.Errorf("[PREREQUISITE %s]:[%s] %w", s.GetName(), set.GetName(), err))
 			s.err = errors.Join(s.err, err)
 			// Removed 'continue' here to allow boolean evaluation below.
 			// continue

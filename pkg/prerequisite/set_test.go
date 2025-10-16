@@ -143,15 +143,15 @@ func TestSetAnd(t *testing.T) {
 			expectedSatisfied bool
 			expectedErr       error
 		}{
-			{"TrueAndTrue", []Set{&mockSet{checkSatisfied: true}, &mockSet{checkSatisfied: true}}, true, nil},
-			{"TrueAndFalse", []Set{&mockSet{checkSatisfied: true}, &mockSet{checkSatisfied: false}}, false, nil},
-			{"FalseAndTrue", []Set{&mockSet{checkSatisfied: false}, &mockSet{checkSatisfied: true}}, false, nil},
-			{"FalseAndFalse", []Set{&mockSet{checkSatisfied: false}, &mockSet{checkSatisfied: false}}, false, nil},
+			{"TrueAndTrue", []Set{&mockSet{name: "A", checkSatisfied: true}, &mockSet{name: "B", checkSatisfied: true}}, true, nil},
+			{"TrueAndFalse", []Set{&mockSet{name: "A", checkSatisfied: true}, &mockSet{name: "B", checkSatisfied: false}}, false, nil},
+			{"FalseAndTrue", []Set{&mockSet{name: "A", checkSatisfied: false}, &mockSet{name: "B", checkSatisfied: true}}, false, nil},
+			{"FalseAndFalse", []Set{&mockSet{name: "A", checkSatisfied: false}, &mockSet{name: "B", checkSatisfied: false}}, false, nil},
 			{"Empty", []Set{}, true, nil},
-			{"WithNil", []Set{&mockSet{checkSatisfied: true}, nil, &mockSet{checkSatisfied: true}}, true, nil},
-			{"TrueAndErrorFalse", []Set{&mockSet{checkSatisfied: true}, &mockSet{checkSatisfied: false, checkErr: testErr1}}, false, testErr1},
-			{"ErrorTrueAndTrue", []Set{&mockSet{checkSatisfied: true, checkErr: testErr1}, &mockSet{checkSatisfied: true}}, true, testErr1},
-			{"ErrorFalseAndErrorFalse", []Set{&mockSet{checkSatisfied: false, checkErr: testErr1}, &mockSet{checkSatisfied: false, checkErr: testErr2}}, false, errors.Join(testErr1, testErr2)},
+			{"WithNil", []Set{&mockSet{name: "A", checkSatisfied: true}, nil, &mockSet{name: "B", checkSatisfied: true}}, true, nil},
+			{"TrueAndErrorFalse", []Set{&mockSet{name: "A", checkSatisfied: true}, &mockSet{name: "B", checkSatisfied: false, checkErr: testErr1}}, false, testErr1},
+			{"ErrorTrueAndTrue", []Set{&mockSet{name: "A", checkSatisfied: true, checkErr: testErr1}, &mockSet{name: "B", checkSatisfied: true}}, true, testErr1},
+			{"ErrorFalseAndErrorFalse", []Set{&mockSet{name: "A", checkSatisfied: false, checkErr: testErr1}, &mockSet{name: "B", checkSatisfied: false, checkErr: testErr2}}, false, errors.Join(testErr1, testErr2)},
 		}
 
 		for _, tc := range testCases {
@@ -231,15 +231,15 @@ func TestSetOr(t *testing.T) {
 			expectedSatisfied bool
 			expectedErr       error
 		}{
-			{"TrueOrTrue", []Set{&mockSet{checkSatisfied: true}, &mockSet{checkSatisfied: true}}, true, nil},
-			{"TrueOrFalse", []Set{&mockSet{checkSatisfied: true}, &mockSet{checkSatisfied: false}}, true, nil},
-			{"FalseOrTrue", []Set{&mockSet{checkSatisfied: false}, &mockSet{checkSatisfied: true}}, true, nil},
-			{"FalseOrFalse", []Set{&mockSet{checkSatisfied: false}, &mockSet{checkSatisfied: false}}, false, nil},
+			{"TrueOrTrue", []Set{&mockSet{name: "A", checkSatisfied: true}, &mockSet{name: "B", checkSatisfied: true}}, true, nil},
+			{"TrueOrFalse", []Set{&mockSet{name: "A", checkSatisfied: true}, &mockSet{name: "B", checkSatisfied: false}}, true, nil},
+			{"FalseOrTrue", []Set{&mockSet{name: "A", checkSatisfied: false}, &mockSet{name: "B", checkSatisfied: true}}, true, nil},
+			{"FalseOrFalse", []Set{&mockSet{name: "A", checkSatisfied: false}, &mockSet{name: "B", checkSatisfied: false}}, false, nil},
 			{"Empty", []Set{}, false, nil},
-			{"WithNil", []Set{&mockSet{checkSatisfied: false}, nil, &mockSet{checkSatisfied: true}}, true, nil},
-			{"FalseOrErrorTrue", []Set{&mockSet{checkSatisfied: false}, &mockSet{checkSatisfied: true, checkErr: testErr1}}, true, testErr1},
-			{"ErrorFalseOrFalse", []Set{&mockSet{checkSatisfied: false, checkErr: testErr1}, &mockSet{checkSatisfied: false}}, false, testErr1},
-			{"ErrorFalseOrErrorFalse", []Set{&mockSet{checkSatisfied: false, checkErr: testErr1}, &mockSet{checkSatisfied: false, checkErr: testErr2}}, false, errors.Join(testErr1, testErr2)},
+			{"WithNil", []Set{&mockSet{name: "A", checkSatisfied: false}, nil, &mockSet{name: "B", checkSatisfied: true}}, true, nil},
+			{"FalseOrErrorTrue", []Set{&mockSet{name: "A", checkSatisfied: false}, &mockSet{name: "B", checkSatisfied: true, checkErr: testErr1}}, true, testErr1},
+			{"ErrorFalseOrFalse", []Set{&mockSet{name: "A", checkSatisfied: false, checkErr: testErr1}, &mockSet{name: "B", checkSatisfied: false}}, false, testErr1},
+			{"ErrorFalseOrErrorFalse", []Set{&mockSet{name: "A", checkSatisfied: false, checkErr: testErr1}, &mockSet{name: "B", checkSatisfied: false, checkErr: testErr2}}, false, errors.Join(testErr1, testErr2)},
 		}
 
 		for _, tc := range testCases {
@@ -260,8 +260,8 @@ func TestSetOr(t *testing.T) {
 
 	// Test case for memoization (caching) of the Check result.
 	t.Run("CheckMemoization", func(t *testing.T) {
-		mockA := &mockSet{checkSatisfied: false}
-		mockB := &mockSet{checkSatisfied: false}
+		mockA := &mockSet{name: "A", checkSatisfied: false}
+		mockB := &mockSet{name: "B", checkSatisfied: false}
 		orSet := Or(mockA, mockB)
 
 		orSet.Check() // First call
