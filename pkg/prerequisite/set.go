@@ -106,10 +106,10 @@ func (s *SetAnd) Check() (bool, error) {
 		}
 		r, err := set.Check()
 		if err != nil {
-			awesome_error.CheckDebug(fmt.Errorf("[PREREQUISITE %s]:[%s] %w", s.GetName(), set.GetName(), err))
+			awesome_error.CheckDebug(fmt.Errorf("[PREREQUISITE %s]/[%s] %w", s.GetName(), set.GetName(), err))
 			s.err = errors.Join(s.err, err)
-			// Removed 'continue' here to allow boolean evaluation below.
-			// continue
+			// drop the prerequisite's result if an error encountered
+			continue
 		}
 		if !r {
 			s.satisfied = false
@@ -182,6 +182,7 @@ func (s *SetOr) Check() (bool, error) {
 		return s.satisfied, s.err
 	}
 	s.checked = true
+	s.satisfied = false
 	for _, set := range s.Sets {
 		if set == nil {
 			continue
@@ -190,8 +191,8 @@ func (s *SetOr) Check() (bool, error) {
 		if err != nil {
 			awesome_error.CheckDebug(fmt.Errorf("[PREREQUISITE %s]:[%s] %w", s.GetName(), set.GetName(), err))
 			s.err = errors.Join(s.err, err)
-			// Removed 'continue' here to allow boolean evaluation below.
-			// continue
+			// drop the prerequisite's result if an error encountered
+			continue
 		}
 		if r {
 			s.satisfied = true
