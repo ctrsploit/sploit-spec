@@ -11,16 +11,6 @@ type Time struct {
 	prerequisite.BasePrerequisite
 }
 
-var (
-	EvenTime = Time{
-		n: 2,
-		BasePrerequisite: prerequisite.BasePrerequisite{
-			Name: "2 | Time",
-			Info: "time %% 2 == 0",
-		},
-	}
-)
-
 func (p *Time) Check() (satisfied bool, err error) {
 	if !p.Checked {
 		p.Satisfied = time.Now().Second()%p.n == 0
@@ -30,11 +20,12 @@ func (p *Time) Check() (satisfied bool, err error) {
 	return
 }
 
-//func (p *Time) GetSatisfied() (bool, error) {
-//	err := p.BasePrerequisite.Check()
-//	if err != nil {
-//		return false, err
-//	}
-//	p.Satisfied = time.Now().Second()%p.n == 0
-//	return p.Satisfied, nil
-//}
+var (
+	EvenTime = Time{
+		n: 2,
+		BasePrerequisite: prerequisite.BasePrerequisite{
+			Name: "2 | Time",
+			Info: "time %% 2 == 0",
+		},
+	}
+)

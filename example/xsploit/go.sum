@@ -1,7 +1,7 @@
 github.com/cpuguy83/go-md2man/v2 v2.0.2 h1:p1EgwI/C7NhT0JmVkwCD2ZBK8j4aeHQX2pMHHBfMQ6w=
 github.com/cpuguy83/go-md2man/v2 v2.0.2/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
-github.com/ctrsploit/sploit-spec v0.6.0-rc3 h1:3GxtKGWyrb9+vvDDI2X84xMNN7B80NroMR7SdYw04R0=
-github.com/ctrsploit/sploit-spec v0.6.0-rc3/go.mod h1:8SEHnTOBTwXdgp/9LV6ZwDPXx5B9pQOJuf0X5w7qd7Q=
+github.com/ctrsploit/sploit-spec v0.6.1 h1:RPBb2ZkYfm2qMzHctVYpCxwn1lTviPJJBHNw5VQY0iA=
+github.com/ctrsploit/sploit-spec v0.6.1/go.mod h1:8SEHnTOBTwXdgp/9LV6ZwDPXx5B9pQOJuf0X5w7qd7Q=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
