@@ -9,6 +9,7 @@ import (
 	"xsploit/cmd/xsploit/vul"
 
 	"github.com/ctrsploit/sploit-spec/pkg/app"
+	spec_version "github.com/ctrsploit/sploit-spec/pkg/spec-version"
 	"github.com/ctrsploit/sploit-spec/pkg/version"
 	"github.com/urfave/cli/v2"
 )
@@ -30,6 +31,7 @@ func main() {
 			exploit.Command,
 			vul.Command,
 			version.Command,
+			spec_version.Command,
 		},
 	}
 	app.InstallGlobalFlags(sploit)

@@ -3,7 +3,7 @@ module xsploit
 go 1.21.4
 
 require (
-	github.com/ctrsploit/sploit-spec v0.6.1
+	github.com/ctrsploit/sploit-spec v0.7.0-rc1
 	github.com/ssst0n3/awesome_libs v0.6.7
 	github.com/urfave/cli/v2 v2.27.1
 )
