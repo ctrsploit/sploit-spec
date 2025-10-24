@@ -216,6 +216,21 @@ func (p *MustBe) Check() (err error) {
 }
 ```
 
+#### 1.2.3 Philosophy for Vulnerability Existence Check
+
+The version of the target software being within the vulnerable version range is a necessary condition for the existence of the vulnerability, but not a sufficient one.
+
+This is because downstream distributions may have already integrated patches that fix the issue within that same version range.
+
+In other words, the definition of “vulnerability existence” can be expressed as:
+
+`VUL_EXIST = AND(NOT(P_VUL_VERSION), P_XXX, ...)`
+
+where:
+
+* `P_VUL_VERSION` denotes the condition of being within the known vulnerable version range;
+* `P_XXX` represents other predicates or verification indicators relevant to the specific vulnerability.
+
 ### 1.3 env
 
 The env list to be collected:
