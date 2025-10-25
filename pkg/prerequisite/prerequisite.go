@@ -36,7 +36,22 @@ func (p *BasePrerequisite) GetChecked() bool {
 	return p.Checked
 }
 
+// Check is a suggested example implementation; override it in derived structs.
 func (p *BasePrerequisite) Check() (bool, error) {
+	return p.CheckTemplate(func() (bool, error) {
+		return false, nil
+	})
+}
+
+func (p *BasePrerequisite) CheckTemplate(f func() (bool, error)) (bool, error) {
+	if p.Checked {
+		return p.Satisfied, p.Err
+	}
+	p.Checked = true
+	// reset
+	p.Err = nil
+	p.Satisfied = false
+	p.Satisfied, p.Err = f()
 	return p.Satisfied, p.Err
 }
 
