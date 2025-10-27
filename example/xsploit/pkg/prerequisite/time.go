@@ -11,13 +11,11 @@ type Time struct {
 	prerequisite.BasePrerequisite
 }
 
-func (p *Time) Check() (satisfied bool, err error) {
-	if !p.Checked {
+func (p *Time) Check() (bool, error) {
+	return p.CheckTemplate(func() (bool, error) {
 		p.Satisfied = time.Now().Second()%p.n == 0
-		p.Checked = true
-	}
-	satisfied = p.Satisfied
-	return
+		return p.Satisfied, p.Err
+	})
 }
 
 var (

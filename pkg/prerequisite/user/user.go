@@ -1,11 +1,11 @@
 package user
 
 import (
+	"fmt"
 	"os/user"
 	"strconv"
 
 	"github.com/ctrsploit/sploit-spec/pkg/prerequisite"
-	"github.com/ssst0n3/awesome_libs/awesome_error"
 )
 
 type MustBe struct {
@@ -30,20 +30,18 @@ var MustBeRootToWriteReleaseAgent = MustBe{
 }
 
 func (p *MustBe) Check() (satisfied bool, err error) {
-	if !p.Checked {
+	return p.CheckTemplate(func() (bool, error) {
 		current, err := user.Current()
 		if err != nil {
-			awesome_error.CheckErr(err)
-			return false, err
+			p.Err = fmt.Errorf("failed to check [%s], caused by getting current user: %w", p.GetName(), err)
+			return p.Satisfied, p.Err
 		}
 		u, err := strconv.Atoi(current.Uid)
 		if err != nil {
-			awesome_error.CheckErr(err)
-			return false, err
+			p.Err = fmt.Errorf("failed to check [%s], caused by converting uid: %w", p.GetName(), err)
+			return p.Satisfied, p.Err
 		}
 		p.Satisfied = uint(u) == p.ExpectedUser
-		p.Checked = true
-	}
-	satisfied = p.Satisfied
-	return
+		return p.Satisfied, p.Err
+	})
 }
