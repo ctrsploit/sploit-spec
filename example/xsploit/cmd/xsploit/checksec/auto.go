@@ -18,7 +18,7 @@ var (
 		Aliases: []string{"a"},
 		Action: func(context *cli.Context) (err error) {
 			vulnerabilities := vul.Vulnerabilities{
-				cve_2099_9999.Vul,
+				&cve_2099_9999.Vul,
 			}
 			err = vulnerabilities.Check(context)
 			if err != nil {

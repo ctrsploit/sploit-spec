@@ -11,6 +11,13 @@ type Time struct {
 	prerequisite.BasePrerequisite
 }
 
+func (p *Time) Check() (bool, error) {
+	return p.CheckTemplate(func() (bool, error) {
+		p.Satisfied = time.Now().Second()%p.n == 0
+		return p.Satisfied, p.Err
+	})
+}
+
 var (
 	EvenTime = Time{
 		n: 2,
@@ -20,21 +27,3 @@ var (
 		},
 	}
 )
-
-func (p *Time) Check() (satisfied bool, err error) {
-	if !p.Checked {
-		p.Satisfied = time.Now().Second()%p.n == 0
-		p.Checked = true
-	}
-	satisfied = p.Satisfied
-	return
-}
-
-//func (p *Time) GetSatisfied() (bool, error) {
-//	err := p.BasePrerequisite.Check()
-//	if err != nil {
-//		return false, err
-//	}
-//	p.Satisfied = time.Now().Second()%p.n == 0
-//	return p.Satisfied, nil
-//}

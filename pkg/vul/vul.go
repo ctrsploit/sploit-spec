@@ -86,11 +86,12 @@ func (v *BaseVulnerability) Info() {
 func (v *BaseVulnerability) CheckSec(context *cli.Context) (vulnerabilityExists bool, err error) {
 	if v.CheckSecPrerequisites != nil {
 		vulnerabilityExists, err = v.CheckSecPrerequisites.Check()
+		if err != nil {
+			return
+		}
+		v.CheckSecPrerequisites.Output()
 	} else {
 		vulnerabilityExists = true
-	}
-	if err != nil {
-		return
 	}
 	v.VulnerabilityExists = vulnerabilityExists
 	v.CheckSecHaveRan = true
