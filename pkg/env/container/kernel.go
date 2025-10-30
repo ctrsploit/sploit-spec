@@ -28,4 +28,5 @@ type User struct {
 
 type KernelSysctl struct {
 	UnprivilegedUsernsClone bool `json:"kernel.unprivileged_userns_clone"`
+	PidMax                  int  `json:"kernel.pid_max"`
 }
