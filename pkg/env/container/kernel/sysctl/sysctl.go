@@ -1,21 +1,9 @@
-package container
-
-import "time"
-
-type Kernel struct {
-	KernelBasic
-	Sysctl `json:"sysctl"`
-}
-
-type KernelBasic struct {
-	CompiledDate  time.Time `json:"compiled_date"`
-	KernelVersion string    `json:"kernel_version"`
-}
+package sysctl
 
 type Sysctl struct {
 	Net
 	User
-	KernelSysctl
+	Kernel
 }
 
 type Net struct {
@@ -26,6 +14,6 @@ type User struct {
 	MaxUserNamespaces int `json:"user.max_user_namespaces"`
 }
 
-type KernelSysctl struct {
+type Kernel struct {
 	UnprivilegedUsernsClone bool `json:"kernel.unprivileged_userns_clone"`
 }
