@@ -16,4 +16,5 @@ type User struct {
 
 type Kernel struct {
 	UnprivilegedUsernsClone bool `json:"kernel.unprivileged_userns_clone"`
+	PidMax                  int  `json:"kernel.pid_max"`
 }
