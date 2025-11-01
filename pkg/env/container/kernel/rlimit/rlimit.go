@@ -9,7 +9,7 @@ type Resource struct {
 	Soft unix.Rlimit
 }
 
-type Rlimits struct {
+type Rlimit struct {
 	Core       Resource `json:"core"`
 	Cpu        Resource `json:"cpu"`
 	Data       Resource `json:"data"`
