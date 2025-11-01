@@ -2,28 +2,21 @@ package rlimit
 
 import "golang.org/x/sys/unix"
 
-type Resource struct {
-	Name string `json:"name"`
-	Type int
-	Hard unix.Rlimit
-	Soft unix.Rlimit
-}
-
 type Rlimit struct {
-	Core       Resource `json:"core"`
-	Cpu        Resource `json:"cpu"`
-	Data       Resource `json:"data"`
-	Fsize      Resource `json:"fsize"`
-	Locks      Resource `json:"locks"`
-	Msgqueue   Resource `json:"msgqueue"`
-	Nice       Resource `json:"nice"`
-	Rtprio     Resource `json:"rtprio"`
-	Rttime     Resource `json:"rttime"`
-	Sigpending Resource `json:"sigpending"`
-	Stack      Resource `json:"stack"`
-	As         Resource `json:"as"`
-	Memlock    Resource `json:"memlock"`
-	Nofile     Resource `json:"nofile"`
-	Nproc      Resource `json:"nproc"`
-	Rss        Resource `json:"rss"`
+	Core       unix.Rlimit `json:"core"`
+	Cpu        unix.Rlimit `json:"cpu"`
+	Data       unix.Rlimit `json:"data"`
+	Fsize      unix.Rlimit `json:"fsize"`
+	Locks      unix.Rlimit `json:"locks"`
+	Msgqueue   unix.Rlimit `json:"msgqueue"`
+	Nice       unix.Rlimit `json:"nice"`
+	Rtprio     unix.Rlimit `json:"rtprio"`
+	Rttime     unix.Rlimit `json:"rttime"`
+	Sigpending unix.Rlimit `json:"sigpending"`
+	Stack      unix.Rlimit `json:"stack"`
+	As         unix.Rlimit `json:"as"`
+	Memlock    unix.Rlimit `json:"memlock"`
+	Nofile     unix.Rlimit `json:"nofile"`
+	Nproc      unix.Rlimit `json:"nproc"`
+	Rss        unix.Rlimit `json:"rss"`
 }
