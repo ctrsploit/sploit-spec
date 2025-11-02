@@ -69,6 +69,8 @@ type CGroups struct {
 	Version            CgroupsVersion `json:"version"`
 	Subsystems         []string       `json:"sub"`
 	TopLevelSubSystems []string       `json:"top"`
+	// sploit-spec use -1 to represent no limit
+	PidsMax int64 `json:"pids_max"`
 }
 
 type Filesystem struct {
