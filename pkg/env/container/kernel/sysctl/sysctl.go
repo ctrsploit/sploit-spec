@@ -11,10 +11,11 @@ type Net struct {
 }
 
 type User struct {
-	MaxUserNamespaces int `json:"user.max_user_namespaces"`
+	MaxUserNamespaces uint64 `json:"user.max_user_namespaces"`
 }
 
 type Kernel struct {
-	UnprivilegedUsernsClone bool `json:"kernel.unprivileged_userns_clone"`
-	PidMax                  int  `json:"kernel.pid_max"`
+	UnprivilegedUsernsClone bool   `json:"kernel.unprivileged_userns_clone"`
+	PidMax                  uint64 `json:"kernel.pid_max"`
+	ThreadsMax              uint64 `json:"kernel.threads_max"`
 }
