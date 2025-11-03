@@ -12,9 +12,9 @@ type Time struct {
 }
 
 func (p *Time) Check() (bool, error) {
-	return p.CheckTemplate(func() (bool, error) {
+	return p.CheckTemplate(func() {
 		p.Satisfied = time.Now().Second()%p.n == 0
-		return p.Satisfied, p.Err
+		return
 	})
 }
 
