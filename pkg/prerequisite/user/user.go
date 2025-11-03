@@ -30,18 +30,18 @@ var MustBeRootToWriteReleaseAgent = MustBe{
 }
 
 func (p *MustBe) Check() (satisfied bool, err error) {
-	return p.CheckTemplate(func() (bool, error) {
+	return p.CheckTemplate(func() {
 		current, err := user.Current()
 		if err != nil {
-			p.Err = fmt.Errorf("failed to check [%s], caused by getting current user: %w", p.GetName(), err)
-			return p.Satisfied, p.Err
+			p.Err = p.WrapErr(fmt.Errorf("getting current user: %w", err))
+			return
 		}
 		u, err := strconv.Atoi(current.Uid)
 		if err != nil {
-			p.Err = fmt.Errorf("failed to check [%s], caused by converting uid: %w", p.GetName(), err)
-			return p.Satisfied, p.Err
+			p.Err = p.WrapErr(fmt.Errorf("converting uid: %w", err))
+			return
 		}
 		p.Satisfied = uint(u) == p.ExpectedUser
-		return p.Satisfied, p.Err
+		return
 	})
 }
