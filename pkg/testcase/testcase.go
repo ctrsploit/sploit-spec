@@ -1,10 +1,11 @@
 package testcase
 
-import "github.com/ctrsploit/sploit-spec/pkg/risk"
+import (
+	"github.com/ctrsploit/sploit-spec/pkg/risk"
+)
 
 type Testcase struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Name string `json:"name"`
 	// Level indicates the risk level of this test (e.g., Low, Medium, High).
 	Level risk.Level
 	// Risk specifies the type of risk this test is designed to assess,
@@ -26,11 +27,6 @@ type Testcase struct {
 	// Expected specifies the expected outcomes after executing the test,
 	// used to determine whether it passes or fails.
 	Expected []string `json:"expected"`
-	// Automated describes how to reproduce the same effects as the manual
-	// test steps using automation commands or scripts. It usually includes
-	// command-line examples, scripts, or tool configurations that can
-	// perform the test automatically.
-	Automated string `json:"automated"`
 	// Reproduces lists detailed procedures to reproduce the vulnerability
 	// or security issue that this test targets.
 	Reproduces []Reproduce `json:"reproduces"`
@@ -44,6 +40,7 @@ type Testcase struct {
 	// challenges that demonstrate similar vulnerabilities or exploitation
 	// techniques encountered in practice.
 	Examples []string `json:"examples"`
+	Automated
 }
 
 type Step struct {
