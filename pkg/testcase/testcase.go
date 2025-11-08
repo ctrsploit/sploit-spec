@@ -44,6 +44,7 @@ type Testcase struct {
 }
 
 type Step struct {
+	Name    string   `json:"name"`
 	Action  string   `json:"action"`
 	Example []string `json:"example"`
 }
