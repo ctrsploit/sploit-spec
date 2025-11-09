@@ -1,8 +1,10 @@
 package app
 
 import (
+	"context"
+
 	"github.com/ctrsploit/sploit-spec/pkg/vul"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 func Vul2ChecksecCmd(v vul.Vulnerability, alias []string, flags []cli.Flag) *cli.Command {
@@ -11,8 +13,8 @@ func Vul2ChecksecCmd(v vul.Vulnerability, alias []string, flags []cli.Flag) *cli
 		Aliases: alias,
 		Usage:   v.GetDescription(),
 		Flags:   flags,
-		Action: func(context *cli.Context) (err error) {
-			_, err = v.CheckSec(context)
+		Action: func(ctx context.Context, cmd *cli.Command) (err error) {
+			_, err = v.CheckSec(ctx)
 			if err != nil {
 				return
 			}
@@ -28,14 +30,14 @@ func Vul2ExploitCmd(v vul.Vulnerability, alias []string, flags []cli.Flag, check
 		Aliases: alias,
 		Usage:   v.GetDescription(),
 		Flags:   flags,
-		Action: func(context *cli.Context) (err error) {
+		Action: func(ctx context.Context, cmd *cli.Command) (err error) {
 			if checkBeforeExploit {
-				_, err = v.CheckSec(context)
+				_, err = v.CheckSec(ctx)
 				if err != nil {
 					return
 				}
 			}
-			err = v.Exploit(context)
+			err = v.Exploit(ctx)
 			return
 		},
 	}
@@ -53,7 +55,7 @@ func Vul2VulCmd(v vul.Vulnerability, alias []string, flagsCheckSec []cli.Flag, f
 		Name:    v.GetName(),
 		Aliases: alias,
 		Usage:   v.GetDescription(),
-		Subcommands: []*cli.Command{
+		Commands: []*cli.Command{
 			checksec,
 			exploit,
 		},

@@ -1,30 +1,34 @@
-package prerequisite
+package prerequisite_test
 
 import (
 	"errors"
-	"reflect"
 	"testing"
+
+	"github.com/ctrsploit/sploit-spec/pkg/prerequisite"
 )
 
-// mockSet is a mock implementation of the Set interface for testing purposes.
-// It allows us to control the behavior of a prerequisite check for our tests.
+// mockSet is a mock object that implements the prerequisite.Set interface for testing purposes.
+// It allows us to control its return values and track the number of times its Check() method is called.
 type mockSet struct {
-	name           string
-	checkSatisfied bool
-	checkErr       error
-	checkCallCount int
+	name       string // The name of the mock set.
+	satisfied  bool   // The boolean value that the Check() method will return.
+	err        error  // The error that the Check() method will return.
+	checkCount int    // The number of times the Check() method has been called.
+	checked    bool   // The mocked 'checked' state.
 }
 
-// Check simulates checking a prerequisite. It returns configured values and counts how many times it was called.
-// This is crucial for testing memoization (caching).
+func (m *mockSet) GetChecked() bool {
+	return m.checked
+}
+
 func (m *mockSet) Check() (bool, error) {
-	m.checkCallCount++
-	return m.checkSatisfied, m.checkErr
+	m.checkCount++
+	m.checked = true
+	return m.satisfied, m.err
 }
 
-// Range for a mockSet, being a leaf node, returns a channel that yields the mockSet instance itself.
-func (m *mockSet) Range() <-chan Set {
-	ch := make(chan Set)
+func (m *mockSet) Range() <-chan prerequisite.Set {
+	ch := make(chan prerequisite.Set)
 	go func() {
 		defer close(ch)
 		ch <- m
@@ -32,327 +36,389 @@ func (m *mockSet) Range() <-chan Set {
 	return ch
 }
 
-// GetName returns the mock's configured name.
 func (m *mockSet) GetName() string {
 	return m.name
 }
 
-// Output is a no-op for the mock, as we are not testing the logging/output functionality.
-func (m *mockSet) Output() {
-	// No operation needed for testing logic.
+// Output is a no-op implementation because we are not testing the specific content
+// of log output, only the logic.
+func (m *mockSet) Output() {}
+
+// newMock is a helper function to create a mockSet.
+func newMock(name string, satisfied bool, err error) *mockSet {
+	return &mockSet{name: name, satisfied: satisfied, err: err}
 }
 
-// TestSetNot covers the functionality of the SetNot struct.
+// TestSetNot tests the Not logic.
 func TestSetNot(t *testing.T) {
-	// Test case for the GetName method.
-	t.Run("GetName", func(t *testing.T) {
-		mockA := &mockSet{name: "A"}
-		notA := Not(mockA)
-		expected := "!(A)"
-		if got := notA.GetName(); got != expected {
-			t.Errorf("Not.GetName() = %v, want %v", got, expected)
-		}
-	})
+	mockErr := errors.New("mock error")
 
-	// Test cases for the Check method, covering logic and error propagation.
-	t.Run("Check", func(t *testing.T) {
-		testErr := errors.New("test error")
+	tests := []struct {
+		name          string
+		inputSet      prerequisite.Set
+		wantSatisfied bool
+		wantErr       error
+		wantName      string
+	}{
+		{
+			name:          "Input True -> Output False",
+			inputSet:      newMock("A", true, nil),
+			wantSatisfied: false,
+			wantErr:       nil,
+			wantName:      "!(A)",
+		},
+		{
+			name:          "Input False -> Output True",
+			inputSet:      newMock("B", false, nil),
+			wantSatisfied: true,
+			wantErr:       nil,
+			wantName:      "!(B)",
+		},
+		{
+			name:          "Input with Error",
+			inputSet:      newMock("C", false, mockErr),
+			wantSatisfied: true, // !false is true
+			wantErr:       mockErr,
+			wantName:      "!(C)",
+		},
+	}
 
-		testCases := []struct {
-			name              string
-			innerSatisfied    bool
-			innerErr          error
-			expectedSatisfied bool
-			expectedErr       error
-		}{
-			{"InnerTrue", true, nil, false, nil},
-			{"InnerFalse", false, nil, true, nil},
-			{"InnerTrueWithError", true, testErr, false, testErr},
-			{"InnerFalseWithError", false, testErr, true, testErr},
-		}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := prerequisite.Not(tt.inputSet)
 
-		for _, tc := range testCases {
-			t.Run(tc.name, func(t *testing.T) {
-				mock := &mockSet{checkSatisfied: tc.innerSatisfied, checkErr: tc.innerErr}
-				notSet := Not(mock)
-				satisfied, err := notSet.Check()
+			// 1. Test GetName()
+			if gotName := s.GetName(); gotName != tt.wantName {
+				t.Errorf("GetName() = %v, want %v", gotName, tt.wantName)
+			}
 
-				if satisfied != tc.expectedSatisfied {
-					t.Errorf("Expected satisfied %v, got %v", tc.expectedSatisfied, satisfied)
-				}
-				if !errors.Is(err, tc.expectedErr) {
-					t.Errorf("Expected error %v, got %v", tc.expectedErr, err)
-				}
-			})
-		}
-	})
+			// 2. First call to Check()
+			gotSatisfied, gotErr := s.Check()
+			if gotSatisfied != tt.wantSatisfied {
+				t.Errorf("Check() gotSatisfied = %v, want %v", gotSatisfied, tt.wantSatisfied)
+			}
+			if !errors.Is(gotErr, tt.wantErr) {
+				t.Errorf("Check() gotErr = %v, want %v", gotErr, tt.wantErr)
+			}
 
-	// Test case for memoization (caching) of the Check result.
-	t.Run("CheckMemoization", func(t *testing.T) {
-		mock := &mockSet{checkSatisfied: true}
-		notSet := Not(mock)
+			// 3. Test memoization
+			// Call Check() again, the inner mockSet's Check() should not be executed again.
+			s.Check()
+			mock := tt.inputSet.(*mockSet)
+			if mock.checkCount != 1 {
+				t.Errorf("underlying Set.Check() was called %d times, want 1", mock.checkCount)
+			}
 
-		notSet.Check() // First call
-		notSet.Check() // Second call
+			// 4. Test Range()
+			count := 0
+			for range s.Range() {
+				count++
+			}
+			if count != 1 {
+				t.Errorf("Range() should yield 1 item, but got %d", count)
+			}
 
-		if mock.checkCallCount != 1 {
-			t.Errorf("Inner Set.Check() should be called once, but was called %d times", mock.checkCallCount)
-		}
-	})
-
-	// Test case for the Range method.
-	t.Run("Range", func(t *testing.T) {
-		mockA := &mockSet{name: "A"}
-		notA := Not(mockA)
-
-		var results []Set
-		for s := range notA.Range() {
-			results = append(results, s)
-		}
-
-		if len(results) != 1 {
-			t.Fatalf("Expected Range to yield 1 item, but got %d", len(results))
-		}
-		if results[0] != notA {
-			t.Errorf("Expected Range to yield the inner set, but it didn't")
-		}
-	})
+			// 5. Test if Output() panics
+			// We don't check the specific output, just ensure the program doesn't crash upon calling it.
+			s.Output()
+		})
+	}
 }
 
-// TestSetAnd covers the functionality of the SetAnd struct.
+// TestSetAnd tests the And logic.
 func TestSetAnd(t *testing.T) {
-	// Test case for the GetName method.
-	t.Run("GetName", func(t *testing.T) {
-		mockA := &mockSet{name: "A"}
-		mockB := &mockSet{name: "B"}
-		andSet := And(mockA, mockB)
-		expected := "(A) && (B)"
-		if got := andSet.GetName(); got != expected {
-			t.Errorf("And.GetName() = %v, want %v", got, expected)
-		}
-	})
+	mockErr1 := errors.New("mock error 1")
+	mockErr2 := errors.New("mock error 2")
 
-	// Test cases for the Check method.
-	t.Run("Check", func(t *testing.T) {
-		testErr1 := errors.New("error 1")
-		testErr2 := errors.New("error 2")
+	tests := []struct {
+		name           string
+		inputSets      []prerequisite.Set
+		wantSatisfied  bool
+		wantErr        error
+		wantName       string
+		wantRangeCount int
+	}{
+		{
+			name:           "All True",
+			inputSets:      []prerequisite.Set{newMock("A", true, nil), newMock("B", true, nil)},
+			wantSatisfied:  true,
+			wantErr:        nil,
+			wantName:       "(A) && (B)",
+			wantRangeCount: 2,
+		},
+		{
+			name:           "One False",
+			inputSets:      []prerequisite.Set{newMock("A", true, nil), newMock("B", false, nil)},
+			wantSatisfied:  false,
+			wantErr:        nil,
+			wantName:       "(A) && (B)",
+			wantRangeCount: 2,
+		},
+		{
+			name:           "All False",
+			inputSets:      []prerequisite.Set{newMock("A", false, nil), newMock("B", false, nil)},
+			wantSatisfied:  false,
+			wantErr:        nil,
+			wantName:       "(A) && (B)",
+			wantRangeCount: 2,
+		},
+		{
+			name:           "One Error, others True",
+			inputSets:      []prerequisite.Set{newMock("A", true, nil), newMock("B", true, mockErr1)},
+			wantSatisfied:  true, // The error does not affect the boolean result calculation.
+			wantErr:        mockErr1,
+			wantName:       "(A) && (B)",
+			wantRangeCount: 2,
+		},
+		{
+			name:           "One Error, one False",
+			inputSets:      []prerequisite.Set{newMock("A", false, nil), newMock("B", true, mockErr1)},
+			wantSatisfied:  false, // because A is false
+			wantErr:        mockErr1,
+			wantName:       "(A) && (B)",
+			wantRangeCount: 2,
+		},
+		{
+			name:           "Multiple Errors",
+			inputSets:      []prerequisite.Set{newMock("A", true, mockErr1), newMock("B", true, mockErr2)},
+			wantSatisfied:  true,
+			wantErr:        errors.Join(mockErr1, mockErr2),
+			wantName:       "(A) && (B)",
+			wantRangeCount: 2,
+		},
+		{
+			name:           "With nil set",
+			inputSets:      []prerequisite.Set{newMock("A", true, nil), nil, newMock("B", true, nil)},
+			wantSatisfied:  true,
+			wantErr:        nil,
+			wantName:       "(A) && (B)",
+			wantRangeCount: 2,
+		},
+		{
+			name:           "Empty sets",
+			inputSets:      []prerequisite.Set{},
+			wantSatisfied:  true, // The initial value for And is true
+			wantErr:        nil,
+			wantName:       "",
+			wantRangeCount: 0,
+		},
+	}
 
-		testCases := []struct {
-			name              string
-			sets              []Set
-			expectedSatisfied bool
-			expectedErr       error
-		}{
-			{"TrueAndTrue", []Set{&mockSet{name: "A", checkSatisfied: true}, &mockSet{name: "B", checkSatisfied: true}}, true, nil},
-			{"TrueAndFalse", []Set{&mockSet{name: "A", checkSatisfied: true}, &mockSet{name: "B", checkSatisfied: false}}, false, nil},
-			{"FalseAndTrue", []Set{&mockSet{name: "A", checkSatisfied: false}, &mockSet{name: "B", checkSatisfied: true}}, false, nil},
-			{"FalseAndFalse", []Set{&mockSet{name: "A", checkSatisfied: false}, &mockSet{name: "B", checkSatisfied: false}}, false, nil},
-			{"Empty", []Set{}, true, nil},
-			{"WithNil", []Set{&mockSet{name: "A", checkSatisfied: true}, nil, &mockSet{name: "B", checkSatisfied: true}}, true, nil},
-			{"TrueAndErrorFalse", []Set{&mockSet{name: "A", checkSatisfied: true}, &mockSet{name: "B", checkSatisfied: false, checkErr: testErr1}}, false, testErr1},
-			{"ErrorTrueAndTrue", []Set{&mockSet{name: "A", checkSatisfied: true, checkErr: testErr1}, &mockSet{name: "B", checkSatisfied: true}}, true, testErr1},
-			{"ErrorFalseAndErrorFalse", []Set{&mockSet{name: "A", checkSatisfied: false, checkErr: testErr1}, &mockSet{name: "B", checkSatisfied: false, checkErr: testErr2}}, false, errors.Join(testErr1, testErr2)},
-		}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := prerequisite.And(tt.inputSets...)
 
-		for _, tc := range testCases {
-			t.Run(tc.name, func(t *testing.T) {
-				andSet := And(tc.sets...)
-				satisfied, err := andSet.Check()
+			// 1. Test GetName()
+			if gotName := s.GetName(); gotName != tt.wantName {
+				t.Errorf("GetName() = %v, want %v", gotName, tt.wantName)
+			}
 
-				if satisfied != tc.expectedSatisfied {
-					t.Errorf("Expected satisfied %v, got %v", tc.expectedSatisfied, satisfied)
+			// 2. First call to Check()
+			gotSatisfied, gotErr := s.Check()
+			if gotSatisfied != tt.wantSatisfied {
+				t.Errorf("Check() gotSatisfied = %v, want %v", gotSatisfied, tt.wantSatisfied)
+			}
+			// Compare the combined error
+			if (gotErr == nil && tt.wantErr != nil) || (gotErr != nil && tt.wantErr == nil) || (gotErr != nil && tt.wantErr != nil && gotErr.Error() != tt.wantErr.Error()) {
+				t.Errorf("Check() gotErr = %v, want %v", gotErr, tt.wantErr)
+			}
+
+			// 3. Test memoization
+			s.Check()
+			for _, set := range tt.inputSets {
+				if mock, ok := set.(*mockSet); ok {
+					if mock.checkCount != 1 {
+						t.Errorf("underlying Set.Check() for %s was called %d times, want 1", mock.name, mock.checkCount)
+					}
 				}
-				// Compare error strings because errors.Join creates a new error instance which fails direct comparison.
-				if (err == nil && tc.expectedErr != nil) || (err != nil && tc.expectedErr == nil) || (err != nil && tc.expectedErr != nil && err.Error() != tc.expectedErr.Error()) {
-					t.Errorf("Expected error '%v', got '%v'", tc.expectedErr, err)
-				}
-			})
-		}
-	})
+			}
 
-	// Test case for memoization (caching) of the Check result.
-	t.Run("CheckMemoization", func(t *testing.T) {
-		mockA := &mockSet{checkSatisfied: true}
-		mockB := &mockSet{checkSatisfied: true}
-		andSet := And(mockA, mockB)
+			// 4. Test Range()
+			count := 0
+			for range s.Range() {
+				count++
+			}
+			if count != tt.wantRangeCount {
+				t.Errorf("Range() should yield %d items, but got %d", tt.wantRangeCount, count)
+			}
 
-		andSet.Check() // First call
-		andSet.Check() // Second call
-
-		if mockA.checkCallCount != 1 {
-			t.Errorf("Inner Set A Check() should be called once, but was called %d times", mockA.checkCallCount)
-		}
-		if mockB.checkCallCount != 1 {
-			t.Errorf("Inner Set B Check() should be called once, but was called %d times", mockB.checkCallCount)
-		}
-	})
-
-	// Test case for the Range method.
-	t.Run("Range", func(t *testing.T) {
-		mockA := &mockSet{name: "A"}
-		mockB := &mockSet{name: "B"}
-		// Note: And.Range is not recursive based on the provided implementation. It yields its direct children.
-		orSet := Or(mockB)
-		andSet := And(mockA, orSet, nil)
-
-		var results []Set
-		for s := range andSet.Range() {
-			results = append(results, s)
-		}
-
-		expected := []Set{mockA, orSet}
-		if !reflect.DeepEqual(results, expected) {
-			t.Errorf("Expected Range to yield %v, but got %v", expected, results)
-		}
-	})
+			// 5. Test if Output() panics
+			s.Output()
+		})
+	}
 }
 
-// TestSetOr covers the functionality of the SetOr struct.
+// TestSetOr tests the Or logic.
 func TestSetOr(t *testing.T) {
-	// Test case for the GetName method.
-	t.Run("GetName", func(t *testing.T) {
-		mockA := &mockSet{name: "A"}
-		mockB := &mockSet{name: "B"}
-		orSet := Or(mockA, mockB)
-		expected := "(A) || (B)"
-		if got := orSet.GetName(); got != expected {
-			t.Errorf("Or.GetName() = %v, want %v", got, expected)
-		}
-	})
+	mockErr1 := errors.New("mock error 1")
+	mockErr2 := errors.New("mock error 2")
 
-	// Test cases for the Check method.
-	t.Run("Check", func(t *testing.T) {
-		testErr1 := errors.New("error 1")
-		testErr2 := errors.New("error 2")
+	tests := []struct {
+		name           string
+		inputSets      []prerequisite.Set
+		wantSatisfied  bool
+		wantErr        error
+		wantName       string
+		wantRangeCount int
+	}{
+		{
+			name:           "One True",
+			inputSets:      []prerequisite.Set{newMock("A", false, nil), newMock("B", true, nil)},
+			wantSatisfied:  true,
+			wantErr:        nil,
+			wantName:       "(A) || (B)",
+			wantRangeCount: 2,
+		},
+		{
+			name:           "All True",
+			inputSets:      []prerequisite.Set{newMock("A", true, nil), newMock("B", true, nil)},
+			wantSatisfied:  true,
+			wantErr:        nil,
+			wantName:       "(A) || (B)",
+			wantRangeCount: 2,
+		},
+		{
+			name:           "All False",
+			inputSets:      []prerequisite.Set{newMock("A", false, nil), newMock("B", false, nil)},
+			wantSatisfied:  false,
+			wantErr:        nil,
+			wantName:       "(A) || (B)",
+			wantRangeCount: 2,
+		},
+		{
+			name:           "One Error, but another is True",
+			inputSets:      []prerequisite.Set{newMock("A", true, nil), newMock("B", false, mockErr1)},
+			wantSatisfied:  true, // because A is true
+			wantErr:        mockErr1,
+			wantName:       "(A) || (B)",
+			wantRangeCount: 2,
+		},
+		{
+			name:           "One Error, others False",
+			inputSets:      []prerequisite.Set{newMock("A", false, nil), newMock("B", false, mockErr1)},
+			wantSatisfied:  false, // because there is no true result
+			wantErr:        mockErr1,
+			wantName:       "(A) || (B)",
+			wantRangeCount: 2,
+		},
+		{
+			name:           "Multiple Errors",
+			inputSets:      []prerequisite.Set{newMock("A", false, mockErr1), newMock("B", false, mockErr2)},
+			wantSatisfied:  false,
+			wantErr:        errors.Join(mockErr1, mockErr2),
+			wantName:       "(A) || (B)",
+			wantRangeCount: 2,
+		},
+		{
+			name:           "With nil set",
+			inputSets:      []prerequisite.Set{newMock("A", false, nil), nil, newMock("B", true, nil)},
+			wantSatisfied:  true,
+			wantErr:        nil,
+			wantName:       "(A) || (B)",
+			wantRangeCount: 2,
+		},
+		{
+			name:           "Empty sets",
+			inputSets:      []prerequisite.Set{},
+			wantSatisfied:  false, // The initial value for Or is false
+			wantErr:        nil,
+			wantName:       "",
+			wantRangeCount: 0,
+		},
+	}
 
-		testCases := []struct {
-			name              string
-			sets              []Set
-			expectedSatisfied bool
-			expectedErr       error
-		}{
-			{"TrueOrTrue", []Set{&mockSet{name: "A", checkSatisfied: true}, &mockSet{name: "B", checkSatisfied: true}}, true, nil},
-			{"TrueOrFalse", []Set{&mockSet{name: "A", checkSatisfied: true}, &mockSet{name: "B", checkSatisfied: false}}, true, nil},
-			{"FalseOrTrue", []Set{&mockSet{name: "A", checkSatisfied: false}, &mockSet{name: "B", checkSatisfied: true}}, true, nil},
-			{"FalseOrFalse", []Set{&mockSet{name: "A", checkSatisfied: false}, &mockSet{name: "B", checkSatisfied: false}}, false, nil},
-			{"Empty", []Set{}, false, nil},
-			{"WithNil", []Set{&mockSet{name: "A", checkSatisfied: false}, nil, &mockSet{name: "B", checkSatisfied: true}}, true, nil},
-			{"FalseOrErrorTrue", []Set{&mockSet{name: "A", checkSatisfied: false}, &mockSet{name: "B", checkSatisfied: true, checkErr: testErr1}}, true, testErr1},
-			{"ErrorFalseOrFalse", []Set{&mockSet{name: "A", checkSatisfied: false, checkErr: testErr1}, &mockSet{name: "B", checkSatisfied: false}}, false, testErr1},
-			{"ErrorFalseOrErrorFalse", []Set{&mockSet{name: "A", checkSatisfied: false, checkErr: testErr1}, &mockSet{name: "B", checkSatisfied: false, checkErr: testErr2}}, false, errors.Join(testErr1, testErr2)},
-		}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := prerequisite.Or(tt.inputSets...)
 
-		for _, tc := range testCases {
-			t.Run(tc.name, func(t *testing.T) {
-				orSet := Or(tc.sets...)
-				satisfied, err := orSet.Check()
+			// 1. Test GetName()
+			if gotName := s.GetName(); gotName != tt.wantName {
+				t.Errorf("GetName() = %v, want %v", gotName, tt.wantName)
+			}
 
-				if satisfied != tc.expectedSatisfied {
-					t.Errorf("Expected satisfied %v, got %v", tc.expectedSatisfied, satisfied)
+			// 2. First call to Check()
+			gotSatisfied, gotErr := s.Check()
+			if gotSatisfied != tt.wantSatisfied {
+				t.Errorf("Check() gotSatisfied = %v, want %v", gotSatisfied, tt.wantSatisfied)
+			}
+			if (gotErr == nil && tt.wantErr != nil) || (gotErr != nil && tt.wantErr == nil) || (gotErr != nil && tt.wantErr != nil && gotErr.Error() != tt.wantErr.Error()) {
+				t.Errorf("Check() gotErr = %v, want %v", gotErr, tt.wantErr)
+			}
+
+			// 3. Test memoization
+			s.Check()
+			for _, set := range tt.inputSets {
+				if mock, ok := set.(*mockSet); ok {
+					if mock.checkCount != 1 {
+						t.Errorf("underlying Set.Check() for %s was called %d times, want 1", mock.name, mock.checkCount)
+					}
 				}
-				// Compare error strings because errors.Join creates a new error instance.
-				if (err == nil && tc.expectedErr != nil) || (err != nil && tc.expectedErr == nil) || (err != nil && tc.expectedErr != nil && err.Error() != tc.expectedErr.Error()) {
-					t.Errorf("Expected error '%v', got '%v'", tc.expectedErr, err)
-				}
-			})
-		}
-	})
+			}
 
-	// Test case for memoization (caching) of the Check result.
-	t.Run("CheckMemoization", func(t *testing.T) {
-		mockA := &mockSet{name: "A", checkSatisfied: false}
-		mockB := &mockSet{name: "B", checkSatisfied: false}
-		orSet := Or(mockA, mockB)
+			// 4. Test Range()
+			count := 0
+			for range s.Range() {
+				count++
+			}
+			if count != tt.wantRangeCount {
+				t.Errorf("Range() should yield %d items, but got %d", tt.wantRangeCount, count)
+			}
 
-		orSet.Check() // First call
-		orSet.Check() // Second call
-
-		if mockA.checkCallCount != 1 {
-			t.Errorf("Inner Set A Check() should be called once, but was called %d times", mockA.checkCallCount)
-		}
-		if mockB.checkCallCount != 1 {
-			t.Errorf("Inner Set B Check() should be called once, but was called %d times", mockB.checkCallCount)
-		}
-	})
-
-	// Test case for the Range method.
-	t.Run("Range", func(t *testing.T) {
-		mockA := &mockSet{name: "A"}
-		mockB := &mockSet{name: "B"}
-		// Note: Or.Range is not recursive based on the provided implementation. It yields its direct children.
-		andSet := And(mockB)
-		orSet := Or(mockA, andSet, nil)
-
-		var results []Set
-		for s := range orSet.Range() {
-			results = append(results, s)
-		}
-
-		expected := []Set{mockA, andSet}
-		if !reflect.DeepEqual(results, expected) {
-			t.Errorf("Expected Range to yield %v, but got %v", expected, results)
-		}
-	})
+			// 5. Test if Output() panics
+			s.Output()
+		})
+	}
 }
 
-// TestComplexNesting demonstrates the behavior of nested structures.
-func TestComplexNesting(t *testing.T) {
-	// Represents the expression: ! (A && (B || C))
-	// A = true, B = false, C = true
-	// B || C -> true
-	// A && (B || C) -> true && true -> true
-	// ! (A && (B || C)) -> !true -> false
-	mockA := &mockSet{name: "A", checkSatisfied: true}
-	mockB := &mockSet{name: "B", checkSatisfied: false}
-	mockC := &mockSet{name: "C", checkSatisfied: true}
+// TestNestedPrerequisites tests nested combinations of prerequisites.
+func TestNestedPrerequisites(t *testing.T) {
+	// Expression: (A || B) && !(C)
+	// A = false, B = true -> (A || B) = true
+	// C = false -> !(C) = true
+	// result = true && true = true
+	mockA := newMock("A", false, nil)
+	mockB := newMock("B", true, nil)
+	mockC := newMock("C", false, nil)
 
-	orBC := Or(mockB, mockC)
-	andABC := And(mockA, orBC)
-	root := Not(andABC)
+	orSet := prerequisite.Or(mockA, mockB)
+	notSet := prerequisite.Not(mockC)
+	andSet := prerequisite.And(orSet, notSet)
 
-	// Test GetName for the complex structure.
-	t.Run("GetName", func(t *testing.T) {
-		expectedName := "!((A) && ((B) || (C)))"
-		if name := root.GetName(); name != expectedName {
-			t.Errorf("GetName() = %q, want %q", name, expectedName)
-		}
-	})
+	// 1. Test GetName()
+	expectedName := "((A) || (B)) && (!(C))"
+	if name := andSet.GetName(); name != expectedName {
+		t.Errorf("GetName() got %s, want %s", name, expectedName)
+	}
 
-	// Test Check for the complex structure, including memoization.
-	t.Run("Check", func(t *testing.T) {
-		satisfied, err := root.Check()
-		if err != nil {
-			t.Fatalf("Check() returned unexpected error: %v", err)
-		}
-		if satisfied {
-			t.Errorf("Check() returned satisfied=true, want false")
-		}
+	// 2. Test Check()
+	satisfied, err := andSet.Check()
+	if err != nil {
+		t.Errorf("Check() returned unexpected error: %v", err)
+	}
+	if !satisfied {
+		t.Errorf("Check() got satisfied = false, want true")
+	}
 
-		// Verify memoization works through the layers. Each leaf should be checked only once.
-		if mockA.checkCallCount != 1 || mockB.checkCallCount != 1 || mockC.checkCallCount != 1 {
-			t.Errorf("Expected each mock Check to be called once, got A:%d, B:%d, C:%d",
-				mockA.checkCallCount, mockB.checkCallCount, mockC.checkCallCount)
-		}
-		// A second check on the root should not re-evaluate any children.
-		root.Check()
-		if mockA.checkCallCount != 1 || mockB.checkCallCount != 1 || mockC.checkCallCount != 1 {
-			t.Errorf("Expected each mock Check to still be called once after second root check, got A:%d, B:%d, C:%d",
-				mockA.checkCallCount, mockB.checkCallCount, mockC.checkCallCount)
-		}
-	})
+	// 3. Test memoization
+	// Call Check() again to ensure the underlying mock's Check() is not called again.
+	andSet.Check()
+	if mockA.checkCount != 1 {
+		t.Errorf("mockA.Check() called %d times, want 1", mockA.checkCount)
+	}
+	if mockB.checkCount != 1 {
+		t.Errorf("mockB.Check() called %d times, want 1", mockB.checkCount)
+	}
+	if mockC.checkCount != 1 {
+		t.Errorf("mockC.Check() called %d times, want 1", mockC.checkCount)
+	}
 
-	// Test Range for the complex structure.
-	t.Run("Range", func(t *testing.T) {
-		// As noted, Not.Range is recursive, but And/Or are not in the provided code.
-		// Therefore, Not(And(A, Or(B, C))) will yield the direct children of And(...),
-		// which are A and Or(B, C).
-		var results []Set
-		for s := range root.Range() {
-			results = append(results, s)
-		}
-		expected := []Set{root}
-		if !reflect.DeepEqual(results, expected) {
-			t.Errorf("Expected Range to yield %v, but got %v", expected, results)
-		}
-	})
+	// 4. Test Range()
+	count := 0
+	// andSet.Range() will yield orSet and notSet
+	for range andSet.Range() {
+		count++
+	}
+	if count != 2 {
+		t.Errorf("Range() should yield 2 items, but got %d", count)
+	}
 }
