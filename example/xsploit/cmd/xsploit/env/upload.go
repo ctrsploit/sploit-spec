@@ -2,8 +2,9 @@ package env
 
 import (
 	"encoding/json"
-	"github.com/ctrsploit/sploit-spec/pkg/upload"
 	"xsploit/env/auto"
+
+	"github.com/ctrsploit/sploit-spec/pkg/upload"
 )
 
 var (
