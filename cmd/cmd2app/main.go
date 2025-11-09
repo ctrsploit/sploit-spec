@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -13,7 +14,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 // SubcommandInfo holds the extracted details for a single subcommand.
@@ -288,7 +289,7 @@ func buildSubcommandApp(info SubcommandInfo, outputDir, sourceModulePath string)
 }
 
 func main() {
-	app := &cli.App{
+	app := &cli.Command{
 		Name: "cmd2app",
 		Usage: `Generates separate, size-optimized executables for each subcommand of a given urfave/cli.Command, e.g.: 
 cmd2app github.com/ctrsploit/ctrsploit/cmd/ctrsploit/vul.Command
@@ -301,11 +302,11 @@ cmd2app github.com/ctrsploit/ctrsploit/cmd/ctrsploit/vul.Command
 				Usage:   "Specify the output directory for the binaries.",
 			},
 		},
-		Action: func(c *cli.Context) error {
-			if c.Args().Len() != 1 {
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			if cmd.Args().Len() != 1 {
 				return cli.Exit("Error: requires one argument.\nUsage: cmd2app <package.VarName>", 1)
 			}
-			fullCmdPath := c.Args().First()
+			fullCmdPath := cmd.Args().First()
 			lastDotIndex := strings.LastIndex(fullCmdPath, ".")
 			if lastDotIndex == -1 {
 				return cli.Exit(fmt.Sprintf("Error: invalid command path '%s'. Format should be <package.VarName>", fullCmdPath), 1)
@@ -313,14 +314,14 @@ cmd2app github.com/ctrsploit/ctrsploit/cmd/ctrsploit/vul.Command
 			pkgPath := fullCmdPath[:lastDotIndex]
 			varName := fullCmdPath[lastDotIndex+1:]
 
-			outputDir := c.String("output-dir")
+			outputDir := cmd.String("output-dir")
 
 			// Get the directory of the source package to use as the module path for replace directive
-			cmd := exec.Command("go", "list", "-f", "{{.Module.Dir}}", pkgPath)
+			goListCmd := exec.Command("go", "list", "-f", "{{.Module.Dir}}", pkgPath)
 			var stdout, stderr bytes.Buffer
-			cmd.Stdout = &stdout
-			cmd.Stderr = &stderr
-			if err := cmd.Run(); err != nil {
+			goListCmd.Stdout = &stdout
+			goListCmd.Stderr = &stderr
+			if err := goListCmd.Run(); err != nil {
 				return cli.Exit(fmt.Sprintf("Error: failed to get module directory for package '%s': %v\n%s", pkgPath, err, stderr.String()), 1)
 			}
 			sourceModulePath := strings.TrimSpace(stdout.String())
@@ -361,7 +362,7 @@ cmd2app github.com/ctrsploit/ctrsploit/cmd/ctrsploit/vul.Command
 			return nil
 		},
 	}
-	if err := app.Run(os.Args); err != nil {
+	if err := app.Run(context.Background(), os.Args); err != nil {
 		log.Fatal(err)
 	}
 }

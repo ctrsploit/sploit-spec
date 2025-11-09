@@ -1,6 +1,7 @@
 package vul
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ctrsploit/sploit-spec/pkg/exeenv"
@@ -10,7 +11,6 @@ import (
 	"github.com/ctrsploit/sploit-spec/pkg/printer"
 	"github.com/ctrsploit/sploit-spec/pkg/result/item"
 	"github.com/ssst0n3/awesome_libs/awesome_error"
-	"github.com/urfave/cli/v2"
 )
 
 type Level int
@@ -33,14 +33,14 @@ type Vulnerability interface {
 	GetVulnerabilityResponse() string
 	Info()
 	// CheckSec : check whether vulnerability exists; context can be used to parse flags
-	CheckSec(context *cli.Context) (bool, error)
+	CheckSec(context.Context) (bool, error)
 	// Output shows checksec result
 	Output()
 	// Exploitable whether vulnerability can be exploited,
 	// will be called automatically before Exploit()
 	Exploitable() (bool, error)
 	// Exploit : context can be used to parse flags
-	Exploit(context *cli.Context) (err error)
+	Exploit(context.Context) (err error)
 }
 
 type BaseVulnerability struct {
@@ -83,7 +83,7 @@ func (v *BaseVulnerability) Info() {
 	log.Logger.Info(v.Description)
 }
 
-func (v *BaseVulnerability) CheckSec(context *cli.Context) (vulnerabilityExists bool, err error) {
+func (v *BaseVulnerability) CheckSec(context.Context) (vulnerabilityExists bool, err error) {
 	if v.CheckSecPrerequisites != nil {
 		vulnerabilityExists, err = v.CheckSecPrerequisites.Check()
 		if err != nil {
@@ -135,8 +135,8 @@ func (v *BaseVulnerability) Exploitable() (satisfied bool, err error) {
 	return
 }
 
-func (v *BaseVulnerability) Exploit(context *cli.Context) (err error) {
-	if context.Bool("force") {
+func (v *BaseVulnerability) Exploit(ctx context.Context) (err error) {
+	if force, ok := ctx.Value("force").(bool); ok && force {
 		return
 	}
 	exploitable, err := v.Exploitable()
