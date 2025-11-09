@@ -14,6 +14,11 @@ func Vul2ChecksecCmd(v vul.Vulnerability, alias []string, flags []cli.Flag) *cli
 		Usage:   v.GetDescription(),
 		Flags:   flags,
 		Action: func(ctx context.Context, cmd *cli.Command) (err error) {
+			for _, flag := range cmd.Flags {
+				name := flag.Names()[0]
+				val := cmd.Value(name)
+				ctx = context.WithValue(ctx, name, val)
+			}
 			_, err = v.CheckSec(ctx)
 			if err != nil {
 				return
@@ -31,6 +36,11 @@ func Vul2ExploitCmd(v vul.Vulnerability, alias []string, flags []cli.Flag, check
 		Usage:   v.GetDescription(),
 		Flags:   flags,
 		Action: func(ctx context.Context, cmd *cli.Command) (err error) {
+			for _, flag := range cmd.Flags {
+				name := flag.Names()[0]
+				val := cmd.Value(name)
+				ctx = context.WithValue(ctx, name, val)
+			}
 			if checkBeforeExploit {
 				_, err = v.CheckSec(ctx)
 				if err != nil {
