@@ -2,7 +2,7 @@ package checksec
 
 import (
 	"context"
-	"xsploit/vul/cve-2099-9999"
+	cve_2099_9999 "xsploit/vul/cve-2099-9999"
 
 	"github.com/ctrsploit/sploit-spec/pkg/vul"
 	"github.com/urfave/cli/v3"
@@ -21,7 +21,7 @@ var (
 			vulnerabilities := vul.Vulnerabilities{
 				&cve_2099_9999.Vul,
 			}
-			err = vulnerabilities.Check(ctx)
+			err = vulnerabilities.Check(cmd)
 			if err != nil {
 				return
 			}
