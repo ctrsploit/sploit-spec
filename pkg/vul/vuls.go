@@ -1,21 +1,21 @@
 package vul
 
 import (
-	"context"
 	"errors"
 	"fmt"
 
 	"github.com/ctrsploit/sploit-spec/pkg/printer"
 	"github.com/ctrsploit/sploit-spec/pkg/result/item"
+	"github.com/urfave/cli/v3"
 )
 
 type Vulnerabilities []Vulnerability
 type Result map[string]printer.Interface
 
-func (vulnerabilities Vulnerabilities) Check(ctx context.Context) error {
+func (vulnerabilities Vulnerabilities) Check(cmd *cli.Command) error {
 	var errs []error
 	for _, v := range vulnerabilities {
-		_, err := v.CheckSec(ctx)
+		_, err := v.CheckSec(cmd)
 		if err != nil {
 			errs = append(errs, err)
 		}
@@ -33,5 +33,4 @@ func (vulnerabilities Vulnerabilities) Output() {
 		}
 	}
 	fmt.Println(printer.Printer.Print(result))
-	return
 }

@@ -339,15 +339,15 @@ type Vulnerability interface {
 	GetVulnerabilityExists() bool
 	GetVulnerabilityResponse() string
 	Info()
-	// CheckSec : check whether vulnerability exists; context can be used to parse flags
-	CheckSec(context *cli.Context) (bool, error)
+	// CheckSec : check whether vulnerability exists; cmd can be used to parse flags
+	CheckSec(cmd *cli.Command) (bool, error)
 	// Output shows checksec result
 	Output()
 	// Exploitable whether vulnerability can be exploited,
 	// will be called automatically before Exploit()
 	Exploitable() (bool, error)
-	// Exploit : context can be used to parse flags
-	Exploit(context *cli.Context) (err error)
+	// Exploit : cmd can be used to parse flags
+	Exploit(cmd *cli.Command) (err error)
 }
 ```
 
@@ -375,8 +375,8 @@ var (
 	}
 )
 
-func (v vulnerability) Exploit(context *cli.Context) (err error) {
-	err = v.BaseVulnerability.Exploit(context)
+func (v vulnerability) Exploit(cmd *cli.Command) (err error) {
+	err = v.BaseVulnerability.Exploit(cmd)
 	if err != nil {
 		return
 	}
