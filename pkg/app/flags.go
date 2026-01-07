@@ -1,6 +1,9 @@
 package app
 
 import (
+	"context"
+	"io"
+
 	"github.com/ctrsploit/sploit-spec/pkg/colorful"
 	"github.com/ctrsploit/sploit-spec/pkg/log"
 	"github.com/ctrsploit/sploit-spec/pkg/printer"
@@ -8,8 +11,7 @@ import (
 	"github.com/ssst0n3/awesome_libs/awesome_error"
 	"github.com/ssst0n3/awesome_libs/awesome_error/exporter"
 	libraryLogger "github.com/ssst0n3/awesome_libs/log"
-	"github.com/urfave/cli/v2"
-	"io"
+	"github.com/urfave/cli/v3"
 )
 
 var (
@@ -35,17 +37,17 @@ var (
 	}
 )
 
-func InstallGlobalFlagDebug(app *cli.App, appLogger *logrus.Logger) {
+func InstallGlobalFlagDebug(app *cli.Command, appLogger *logrus.Logger) {
 	app.Flags = append(app.Flags, debugFlag)
 	before := app.Before
-	app.Before = func(context *cli.Context) (err error) {
+	app.Before = func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
 		if before != nil {
-			err = before(context)
+			_, err := before(ctx, cmd)
 			if err != nil {
-				return
+				return nil, err
 			}
 		}
-		debug := context.Bool("debug")
+		debug := cmd.Bool("debug")
 		awesome_error.Default = exporter.GetAwesomeError(appLogger, debug)
 		if !debug {
 			// print library's logger only if debug mode
@@ -65,52 +67,52 @@ func InstallGlobalFlagDebug(app *cli.App, appLogger *logrus.Logger) {
 			})
 			libraryLogger.Logger.Debug("debug mode on")
 		}
-		return
+		return nil, nil
 	}
 }
 
-func InstallGlobalFlagExperimentalFlag(app *cli.App) {
+func InstallGlobalFlagExperimentalFlag(app *cli.Command) {
 	app.Flags = append(app.Flags, experimentalFlag)
 }
 
-func InstallGlobalFlagColorfulFlag(app *cli.App) {
+func InstallGlobalFlagColorfulFlag(app *cli.Command) {
 	app.Flags = append(app.Flags, colorfulFlag)
 	before := app.Before
-	app.Before = func(ctx *cli.Context) (err error) {
+	app.Before = func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
 		if before != nil {
-			err = before(ctx)
+			_, err := before(ctx, cmd)
 			if err != nil {
-				return
+				return nil, err
 			}
 		}
-		flag := ctx.Bool("colorful")
+		flag := cmd.Bool("colorful")
 		if flag {
 			colorful.O = colorful.Colorful{}
 			printer.Printer = printer.NewWorker(printer.TypeColorful)
 		}
-		return
+		return nil, nil
 	}
 }
 
-func InstallGlobalFlagJsonFlag(app *cli.App) {
+func InstallGlobalFlagJsonFlag(app *cli.Command) {
 	app.Flags = append(app.Flags, jsonFlag)
 	before := app.Before
-	app.Before = func(ctx *cli.Context) (err error) {
+	app.Before = func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
 		if before != nil {
-			err = before(ctx)
+			_, err := before(ctx, cmd)
 			if err != nil {
-				return
+				return nil, err
 			}
 		}
-		flag := ctx.Bool("json")
+		flag := cmd.Bool("json")
 		if flag {
 			printer.Printer = printer.NewWorker(printer.TypeJson)
 		}
-		return
+		return nil, nil
 	}
 }
 
-func InstallGlobalFlags(app *cli.App) {
+func InstallGlobalFlags(app *cli.Command) {
 	InstallGlobalFlagDebug(app, log.Logger)
 	InstallGlobalFlagExperimentalFlag(app)
 	InstallGlobalFlagColorfulFlag(app)

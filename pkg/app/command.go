@@ -4,15 +4,15 @@ import (
 	"fmt"
 
 	"github.com/ctrsploit/sploit-spec/pkg/version"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
-func Command2App(command *cli.Command) (app *cli.App) {
-	return &cli.App{
+func Command2App(command *cli.Command) (app *cli.Command) {
+	return &cli.Command{
 		Name:     command.Name,
 		Usage:    command.Usage,
 		Action:   command.Action,
-		Commands: append(command.Subcommands, version.Command),
+		Commands: append(command.Commands, version.Command),
 		Flags:    command.Flags,
 		Before:   command.Before,
 	}
@@ -36,9 +36,9 @@ func ReplaceSubCommand(commandName string, command *cli.Command, newSubCommand *
 		return fmt.Errorf("new subcommand cannot be nil")
 	}
 	found := false
-	for i, subcommand := range command.Subcommands {
+	for i, subcommand := range command.Commands {
 		if subcommand.Name == commandName {
-			command.Subcommands[i] = newSubCommand
+			command.Commands[i] = newSubCommand
 			found = true
 			break
 		}

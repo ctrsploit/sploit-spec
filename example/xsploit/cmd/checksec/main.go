@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"os"
 	"xsploit/cmd/xsploit/checksec"
 
@@ -16,7 +17,7 @@ func main() {
 	sploit := app.Command2App(checksec.Command)
 	sploit.Name = name
 	app.InstallGlobalFlags(sploit)
-	err := sploit.Run(os.Args)
+	err := sploit.Run(context.Background(), os.Args)
 	if err != nil {
 		awesome_error.CheckFatal(err)
 	}

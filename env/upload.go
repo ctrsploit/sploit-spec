@@ -1,25 +1,27 @@
 package env
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"time"
+
 	"github.com/ctrsploit/sploit-spec/pkg/env/linux"
 	"github.com/ctrsploit/sploit-spec/pkg/upload"
-	"github.com/urfave/cli/v2"
-	"time"
+	"github.com/urfave/cli/v3"
 )
 
 var LinuxEnv linux.Env
 
-func UploadAction(context *cli.Context) (err error) {
+func UploadAction(context context.Context, cmd *cli.Command) (err error) {
 	//eg. ECS
-	servicename := context.Args().Get(0)
+	servicename := cmd.Args().Get(0)
 	// region_tag.json eg. cn-north4_linux.json
-	filename := context.Args().Get(1)
+	filename := cmd.Args().Get(1)
 	// obsurl
-	obsurl := context.Args().Get(2)
+	obsurl := cmd.Args().Get(2)
 	// obshost (if want to hide obs upload behavior), put your real obsurl in here, put the fake url in obsurl
-	obshost := context.Args().Get(3)
+	obshost := cmd.Args().Get(3)
 	if servicename == "" {
 		return
 	}

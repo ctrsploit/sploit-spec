@@ -6,16 +6,16 @@ import (
 
 	"github.com/ctrsploit/sploit-spec/pkg/printer"
 	"github.com/ctrsploit/sploit-spec/pkg/result/item"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 type Vulnerabilities []Vulnerability
 type Result map[string]printer.Interface
 
-func (vulnerabilities Vulnerabilities) Check(context *cli.Context) error {
+func (vulnerabilities Vulnerabilities) Check(cmd *cli.Command) error {
 	var errs []error
 	for _, v := range vulnerabilities {
-		_, err := v.CheckSec(context)
+		_, err := v.CheckSec(cmd)
 		if err != nil {
 			errs = append(errs, err)
 		}
@@ -33,5 +33,4 @@ func (vulnerabilities Vulnerabilities) Output() {
 		}
 	}
 	fmt.Println(printer.Printer.Print(result))
-	return
 }
